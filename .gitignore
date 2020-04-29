@@ -90,8 +90,6 @@ packages/*
 # (and the packages folder if the line above has been uncommented)
 !packages/build/
 
-# Others
-sql/
 *.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*
