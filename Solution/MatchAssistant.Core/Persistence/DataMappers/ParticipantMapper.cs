@@ -42,7 +42,8 @@ namespace MatchAssistant.Core.Persistence.DataMappers
             var sqlQuery = $@"
 SELECT participant.* FROM game_participants participant
 JOIN games game ON game.Id = participant.GameId
-WHERE game.Title = @Title AND game.Id IN @GameIds";
+JOIN participant_states state ON state.Id = participant.StateId 
+WHERE state.Name = 'Accepted' AND game.Title = @Title AND game.Id IN @GameIds";
             var queryParams = new { Id = latestGameId, Title = gameTitle, GameIds = gameIds };
             return dbConnectionProvider.Connection.Query<ParticipantsGroup>(sqlQuery, queryParams);
         }
