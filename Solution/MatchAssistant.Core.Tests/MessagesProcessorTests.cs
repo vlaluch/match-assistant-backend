@@ -78,6 +78,20 @@ namespace MatchAssistant.Core.Tests
             Assert.AreEqual("1", countResponse);
         }
 
+        public void DuplicatePlusWithNameIsIgnored()
+        {
+            CreateNewGame();
+
+            var message = CreateTextMessageFromUser(1, "Bob", "+ Вася");
+            target.ProcessMessage(message);
+
+            var message2 = CreateTextMessageFromUser(1, "Bob", "+ Вася");
+            target.ProcessMessage(message2);
+
+            var countResponse = GetCountCommandResult();
+            Assert.AreEqual("1", countResponse);
+        }
+
         [TestMethod]
         public void DuplicatedSinglePlusIsIgnored()
         {
@@ -91,6 +105,51 @@ namespace MatchAssistant.Core.Tests
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1", countResponse);
+        }
+
+        [TestMethod]
+        public void PlusOneIncrementsCount()
+        {
+            CreateNewGame();
+
+            var message = CreateTextMessageFromUser(1, "Bob", "+");
+            target.ProcessMessage(message);
+
+            var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
+            target.ProcessMessage(message2);
+
+            var countResponse = GetCountCommandResult();
+            Assert.AreEqual("2", countResponse);
+        }
+
+        [TestMethod]
+        public void DuplicatePlusOneIncrementsCount()
+        {
+            CreateNewGame();
+
+            var message = CreateTextMessageFromUser(1, "Bob", "+1");
+            target.ProcessMessage(message);
+
+            var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
+            target.ProcessMessage(message2);
+
+            var countResponse = GetCountCommandResult();
+            Assert.AreEqual("2", countResponse);
+        }
+
+        [TestMethod]
+        public void PlusNumberIncrementsCount()
+        {
+            CreateNewGame();
+
+            var message = CreateTextMessageFromUser(1, "Bob", "+2");
+            target.ProcessMessage(message);
+
+            var message2 = CreateTextMessageFromUser(1, "Bob", "+3");
+            target.ProcessMessage(message2);
+
+            var countResponse = GetCountCommandResult();
+            Assert.AreEqual("5", countResponse);
         }
 
         [TestMethod]

@@ -26,6 +26,8 @@
 
         public int Count { get; set; } = 1;
 
+        public bool IsSinglePerson { get; set; }
+
         public int StateId { get; set; }
 
         public string State

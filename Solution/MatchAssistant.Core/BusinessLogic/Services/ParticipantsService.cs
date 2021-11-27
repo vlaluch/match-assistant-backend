@@ -101,7 +101,7 @@ namespace MatchAssistant.Core.BusinessLogic.Services
                 participantMapper.UpdateParticipant(gameId, existingGroup);
                 return true;
             }
-            else if (updatedGroup.State == ParticipantState.Accepted && updatedGroup.Count > 1)
+            else if (updatedGroup.State == ParticipantState.Accepted && updatedGroup.Count > 0 && !updatedGroup.IsSinglePerson)
             {
                 existingGroup.Count += updatedGroup.Count;
                 participantMapper.UpdateParticipant(gameId, existingGroup);

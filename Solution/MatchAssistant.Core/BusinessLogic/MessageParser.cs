@@ -61,6 +61,7 @@ namespace MatchAssistant.Core.BusinessLogic
             {
                 participantsGroup.Name = message.Author.Name;
                 participantsGroup.Count = 1;
+                participantsGroup.IsSinglePerson = true;
             }
             else if (char.IsDigit(messageParts[0][0]))
             {
@@ -84,6 +85,7 @@ namespace MatchAssistant.Core.BusinessLogic
             {
                 participantsGroup.Name = string.Join(" ", messageParts);
                 participantsGroup.Count = 1;
+                participantsGroup.IsSinglePerson = true;
             }
 
             participantsGroup.State = GetStateFromMessage(message.Text);
