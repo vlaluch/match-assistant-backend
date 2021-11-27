@@ -332,6 +332,48 @@ namespace MatchAssistant.Core.Tests
 
         #endregion
 
+        [TestMethod]
+        public void ShouldRestoreCorrectStateForPlusOne()
+        {
+            CreateNewGame();
+
+            var message = CreateTextMessageFromUser(1, "Bob", "+1");
+            target.ProcessMessage(message);
+
+            var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
+            target.ProcessMessage(message2);
+
+            var message3 = CreateTextMessageFromUser(1, "Bob", "-2");
+            target.ProcessMessage(message3);
+
+            var message4 = CreateTextMessageFromUser(1, "Bob", "+1");
+            target.ProcessMessage(message4);
+
+            var countResponse = GetCountCommandResult();
+            Assert.AreEqual("1", countResponse);
+        }
+
+        [TestMethod]
+        public void ShouldRestoreCorrectStateForPlusNumber()
+        {
+            CreateNewGame();
+
+            var message = CreateTextMessageFromUser(1, "Bob", "+1");
+            target.ProcessMessage(message);
+
+            var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
+            target.ProcessMessage(message2);
+
+            var message3 = CreateTextMessageFromUser(1, "Bob", "-2");
+            target.ProcessMessage(message3);
+
+            var message4 = CreateTextMessageFromUser(1, "Bob", "+2");
+            target.ProcessMessage(message4);
+
+            var countResponse = GetCountCommandResult();
+            Assert.AreEqual("2", countResponse);
+        }
+
         #endregion
 
         #region List

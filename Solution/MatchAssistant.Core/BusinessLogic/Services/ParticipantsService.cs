@@ -87,6 +87,7 @@ namespace MatchAssistant.Core.BusinessLogic.Services
                     if (updatedGroup.Count >= existingGroup.Count)
                     {
                         existingGroup.State = ParticipantState.Declined;
+                        existingGroup.Count = 1;
                     }
                     else
                     {
@@ -96,6 +97,7 @@ namespace MatchAssistant.Core.BusinessLogic.Services
                 else
                 {
                     existingGroup.State = updatedGroup.State;
+                    existingGroup.Count = updatedGroup.Count;
                 }
 
                 participantMapper.UpdateParticipant(gameId, existingGroup);
