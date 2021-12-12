@@ -78,7 +78,7 @@ namespace MatchAssistant.Core.Tests
             Assert.AreEqual("1", countResponse);
         }
 
-        public void DuplicatePlusWithNameIsIgnored()
+        public void DuplicatePlusWithNameIncrementsCount()
         {
             CreateNewGame();
 
@@ -89,7 +89,7 @@ namespace MatchAssistant.Core.Tests
             target.ProcessMessage(message2);
 
             var countResponse = GetCountCommandResult();
-            Assert.AreEqual("1", countResponse);
+            Assert.AreEqual("2", countResponse);
         }
 
         [TestMethod]
