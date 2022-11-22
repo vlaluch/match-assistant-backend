@@ -1,62 +1,42 @@
-using MatchAssistant.Core.BusinessLogic.Commands;
 using MatchAssistant.Core.BusinessLogic.Interfaces;
 using MatchAssistant.Core.Entities;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MatchAssistant.Core.BusinessLogic
 {
     public class MessagesProcessor : IMessagesProcessor
     {
-        private readonly IParticipantsService participantsService;
-        private readonly IChatsService chatsService;
+        private readonly IEnumerable<IHandleCommand> handlers;
 
-        public MessagesProcessor(
-            IParticipantsService participantsService,
-            IChatsService chatsService)
+        public MessagesProcessor(IEnumerable<IHandleCommand> handlers)
         {
-            this.participantsService = participantsService;
-            this.chatsService = chatsService;
+            this.handlers = handlers;
         }
 
-        public string ProcessMessage(ChatMessage message)
+        public Response ProcessMessage(ChatMessage message)
         {
             if (message == null)
-            {
-                return string.Empty;
-            }
+                return new Response();
 
-            chatsService.CreateChat(message.Chat);
-            chatsService.CreateUser(message.Author);
-            chatsService.AddUserToChat(message.Chat.Id, message.Author.Id);
+            //chatsService.CreateChat(message.Chat);
+            //chatsService.CreateUser(message.Author);
+            //chatsService.AddUserToChat(message.Chat.Id, message.Author.Id);
 
             var commandType = MessageParser.GetCommandTypeFromMessage(message);
 
             if (commandType == CommandType.NotCommand)
-            {
-                return string.Empty;
-            }
+                return new Response();
 
-            var command = CreateCommand(commandType, message);
-            return command.Execute();
-        }
+            var command = new Command(message, commandType);
 
-        private BaseCommand CreateCommand(CommandType commandType, ChatMessage message)
-        {
-            switch (commandType)
-            {
-                case CommandType.NewGame:
-                    return new NewGameCommand(message, participantsService);
-                case CommandType.SetState:
-                    return new SetParticipantsGroupStateCommand(message, participantsService);
-                case CommandType.Count:
-                    return new GetParticipantsCountCommand(message, participantsService);
-                case CommandType.List:
-                    return new GetParticipantsListCommand(message, participantsService);
-                case CommandType.Ping:
-                    return new PingCommand(message, participantsService, chatsService);
-                default:
-                    throw new NotImplementedException("Unexpected command");
-            }
+            var handler = handlers.FirstOrDefault(h => h.CommandType == commandType);
+
+            if (handler == null)
+                throw new NotImplementedException("Unexpected command");
+
+            return handler.Handle(command);
         }
     }
 }

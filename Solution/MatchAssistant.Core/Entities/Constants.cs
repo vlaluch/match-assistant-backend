@@ -31,7 +31,7 @@ namespace MatchAssistant.Core.Entities
         List,
         Ping,
         Shuffle
-    }
+    }    
 
     [Flags]
     public enum ListFilters

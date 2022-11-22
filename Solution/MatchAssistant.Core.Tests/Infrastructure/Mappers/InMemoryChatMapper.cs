@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace MatchAssistant.Core.Tests.Infrastructure.Mappers
 {
-    public class InMemoryChatMapper : IChatMapper
+    public class InMemoryChatMapper : IChatRepository
     {
         private readonly List<GameChat> chats;
 

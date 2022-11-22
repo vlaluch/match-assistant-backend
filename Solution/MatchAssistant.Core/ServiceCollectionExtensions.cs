@@ -1,6 +1,6 @@
 ﻿using MatchAssistant.Core.BusinessLogic;
+using MatchAssistant.Core.BusinessLogic.Handlers;
 using MatchAssistant.Core.BusinessLogic.Interfaces;
-using MatchAssistant.Core.BusinessLogic.Services;
 using MatchAssistant.Core.DataLayer.Interfaces;
 using MatchAssistant.Core.Persistence;
 using MatchAssistant.Core.Persistence.DataMappers;
@@ -14,20 +14,24 @@ namespace MatchAssistant.Core
         public static void AddDataAccessServices(this IServiceCollection services)
         {
             services.AddScoped<IDbConnectionProvider, DbConnectionProvider>();
-            services.AddTransient<IPlayersMapper, PlayersMapper>();
-            services.AddTransient<IGameMapper, GameMapper>();
-            services.AddTransient<IChatMapper, ChatMapper>();
-            services.AddTransient<IUserMapper, UserMapper>();
-            services.AddTransient<IParticipantMapper, ParticipantMapper>();
+
+            services.AddTransient<IPlayersRepository, PlayersRepository>();
+            services.AddTransient<IGameRepository, GameRepository>();
+            services.AddTransient<IChatRepository, ChatRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IParticipantRepository, ParticipantRepository>();
         }
 
         public static void AddBusinessLogicServices(this IServiceCollection services)
         {
-            services.AddTransient<IParticipantsService, ParticipantsService>();
-            services.AddTransient<IPlayersService, PlayersService>();
-            services.AddTransient<IChatsService, ChatsService>();            
             services.AddTransient<ITeamsGenerator, TeamsGenerator>();
             services.AddTransient<IMessagesProcessor, MessagesProcessor>();
-        }        
+
+            services.AddTransient<IHandleCommand, GetParticipantsCountCommandHandler>();
+            services.AddTransient<IHandleCommand, GetParticipantsListCommandHandler>();
+            services.AddTransient<IHandleCommand, NewGameCommandHandler>();
+            services.AddTransient<IHandleCommand, PingCommandHandler>();
+            services.AddTransient<IHandleCommand, SetParticipantsGroupStateCommandHandler>();
+        }
     }
 }

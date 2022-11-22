@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace MatchAssistant.Core.Tests.Infrastructure.Mappers
 {
-    public class InMemoryParticipantMapper : IParticipantMapper
+    public class InMemoryParticipantMapper : IParticipantRepository
     {
         private readonly Dictionary<int, List<ParticipantsGroup>> participants;
 

@@ -1,5 +1,5 @@
-﻿using MatchAssistant.Core.BusinessLogic;
-using MatchAssistant.Core.BusinessLogic.Interfaces;
+﻿using MatchAssistant.Core.BusinessLogic.Interfaces;
+using MatchAssistant.Web.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -14,35 +14,28 @@ namespace MatchAssistant.Web.Controllers
         private readonly IMessagesProcessor messagesProcessor;
 
         public ChatMessagesController(
-            IBotSettingsProvider botSettingsProvider,
+            ITelegramBotClient client,
             IMessagesProcessor messagesProcessor)
         {
-            client = new TelegramBotClient(botSettingsProvider.Token);
+            this.client = client;
             this.messagesProcessor = messagesProcessor;
-
         }
 
         [HttpPost]
-        public async void Post([FromBody]Update update)
+        public async void Post([FromBody] Update update)
         {
-            if (update == null)
-            {
+            var message = update?.Message;
+
+            if (message == null || message.Type != MessageType.Text)
                 return;
-            }
 
-            var message = update.Message;
+            var response = messagesProcessor.ProcessMessage(message.ToChatMessage());
 
-            if (message.Type != MessageType.Text)
+            var formattedResponse = TelegramCommandResponseFormatter.FormatCommandResponse(message.ToChatMessage(), response);
+
+            if (!string.IsNullOrEmpty(formattedResponse))
             {
-                return;
-            }
-
-            var messageInfo = message.ToChatMessage();
-
-            var response = messagesProcessor.ProcessMessage(messageInfo);
-            if (!string.IsNullOrEmpty(response))
-            {
-                await client.SendTextMessageAsync(message.Chat.Id, response, ParseMode.Markdown);
+                await client.SendTextMessageAsync(message.Chat.Id, formattedResponse, ParseMode.Markdown);
             }
         }
     }

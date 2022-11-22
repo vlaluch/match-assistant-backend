@@ -94,6 +94,60 @@ namespace MatchAssistant.Core.BusinessLogic
             return participantsGroup;
         }
 
+        public static PingFilters ParsePingFilters(IEnumerable<string> filterNames)
+        {
+            var filters = PingFilters.None;
+
+            foreach (var filterName in filterNames)
+            {
+                var trimmedName = filterName.ToLower().Trim();
+
+                if (trimmedName == "all" || trimmedName == "a")
+                {
+                    filters |= PingFilters.All;
+                }
+                else if (trimmedName == "recent" || trimmedName == "r")
+                {
+                    filters |= PingFilters.Recent;
+                }
+                else if (trimmedName == "notsured" || trimmedName == "ns")
+                {
+                    filters |= PingFilters.NotSured;
+                }
+            }
+
+            return filters;
+        }
+
+        public static ListFilters ParseListFilters(IEnumerable<string> filterNames)
+        {
+            var filters = ListFilters.None;
+
+            foreach (var filterName in filterNames)
+            {
+                var trimmedName = filterName.ToLower().Trim();
+
+                if (trimmedName == "all" || trimmedName == "a")
+                {
+                    filters |= ListFilters.All;
+                }
+                else if (trimmedName == "accepted" || trimmedName == "ac")
+                {
+                    filters |= ListFilters.Accepted;
+                }
+                else if (trimmedName == "declined" || trimmedName == "d")
+                {
+                    filters |= ListFilters.Declined;
+                }
+                else if (trimmedName == "notsured" || trimmedName == "ns")
+                {
+                    filters |= ListFilters.NotSured;
+                }
+            }
+
+            return filters;
+        }
+
         private static string GetStateFromMessage(string messageText)
         {
             if (IsNotSureMessage(messageText))

@@ -32,7 +32,7 @@ namespace MatchAssistant.Core.BusinessLogic
             }
 
             return "0";
-        }        
+        }
 
         public static string FormatListResponse(IEnumerable<ParticipantsGroup> participants, ListFilters filters)
         {

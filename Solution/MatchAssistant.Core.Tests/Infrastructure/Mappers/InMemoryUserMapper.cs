@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace MatchAssistant.Core.Tests.Infrastructure.Mappers
 {
-    public class InMemoryUserMapper : IUserMapper
+    public class InMemoryUserMapper : IUserRepository
     {
         private readonly Dictionary<int, ChatUser> users;
         private readonly Dictionary<long, List<int>> chatUsers;

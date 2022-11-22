@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace MatchAssistant.Core.Tests.Infrastructure.Mappers
 {
-    public class InMemoryGameMapper : IGameMapper
+    public class InMemoryGameMapper : IGameRepository
     {
         private readonly List<Game> games;
 

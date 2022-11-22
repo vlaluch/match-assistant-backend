@@ -1,5 +1,4 @@
 ﻿using MatchAssistant.Core.BusinessLogic;
-using MatchAssistant.Core.BusinessLogic.Services;
 using MatchAssistant.Core.Entities;
 using MatchAssistant.Core.Tests.Infrastructure.Mappers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

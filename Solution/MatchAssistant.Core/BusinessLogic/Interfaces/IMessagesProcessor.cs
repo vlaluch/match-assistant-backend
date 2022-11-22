@@ -4,6 +4,6 @@ namespace MatchAssistant.Core.BusinessLogic.Interfaces
 {
     public interface IMessagesProcessor
     {
-        string ProcessMessage(ChatMessage message);
+        Response ProcessMessage(ChatMessage message);
     }
 }
