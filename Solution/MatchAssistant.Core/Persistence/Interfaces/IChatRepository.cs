@@ -1,11 +1,12 @@
 ﻿using MatchAssistant.Core.Entities;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.Interfaces
 {
     public interface IChatRepository
     {
-        GameChat GetChatByName(string name);
+        Task<GameChat> GetChatByNameAsync(string name);
 
-        void Create(GameChat chat);
+        Task CreateAsync(GameChat chat);
     }
 }

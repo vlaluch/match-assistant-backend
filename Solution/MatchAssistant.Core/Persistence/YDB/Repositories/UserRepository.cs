@@ -3,6 +3,7 @@ using MatchAssistant.Core.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ydb.Sdk.Table;
 using Ydb.Sdk.Value;
 
@@ -17,7 +18,7 @@ namespace MatchAssistant.Core.Persistence.YDB.Repositories
             this.driverProvider = driverProvider;
         }
 
-        public async void Create(ChatUser user)
+        public async Task CreateAsync(ChatUser user)
         {
             if (user == null)
             {
@@ -52,7 +53,7 @@ UPSERT INTO users (id, name, user_name) VALUES ($id, $name, $user_name);";
             response.Status.EnsureSuccess();
         }
 
-        public async void AddToChat(long chatId, int userId)
+        public async Task AddToChatAsync(long chatId, int userId)
         {
             using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
 
@@ -80,7 +81,7 @@ UPSERT INTO users_chats (user_id, chat_id) VALUES ($user_id, $chat_id);";
             response.Status.EnsureSuccess();
         }
 
-        public async IEnumerable<ChatUser> GetChatUsers(long chatId)
+        public async Task<IEnumerable<ChatUser>> GetChatUsersAsync(long chatId)
         {
             using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
 

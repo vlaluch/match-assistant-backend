@@ -2,30 +2,31 @@
 using MatchAssistant.Core.Entities;
 using MatchAssistant.Core.Persistence.Interfaces;
 using System;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.BusinessLogic.Handlers
 {
     public class NewGameCommandHandler : IHandleCommand
     {
-        private readonly IGameRepository gameMapper;
+        private readonly IGameRepository gameRepository;
 
         public CommandType CommandType => CommandType.NewGame;
 
-        public NewGameCommandHandler(IGameRepository gameMapper)
+        public NewGameCommandHandler(IGameRepository gameRepository)
         {
-            this.gameMapper = gameMapper;
+            this.gameRepository = gameRepository;
         }
 
-        public Response Handle(Command command)
+        public async Task<Response> HandleAsync(Command command)
         {
-            CreateNewGame(command.Message.Chat.Name);
+            await CreateNewGameAsync(command.Message.Chat.Name);
             return new Response();
         }
 
-        private void CreateNewGame(string title)
+        private async Task CreateNewGameAsync(string title)
         {
             var newGame = new Game(title, DateTime.Now.AddDays(1));
-            gameMapper.AddGame(newGame);
+            await gameRepository.AddGameAsync(newGame);
         }
     }
 }

@@ -1,14 +1,15 @@
 ﻿using MatchAssistant.Core.Entities;
 using System;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.Interfaces
 {
     public interface IGameRepository
     {
-        Game GetLatestGameByTitle(string title);
+        Task<Game> GetLatestGameByTitleAsync(string title);
 
-        Game FindGameByTitleAndDate(string title, DateTime date);
+        Task<Game> FindGameByTitleAndDateAsync(string title, DateTime date);
 
-        void AddGame(Game game);
+        Task AddGameAsync(Game game);
     }
 }

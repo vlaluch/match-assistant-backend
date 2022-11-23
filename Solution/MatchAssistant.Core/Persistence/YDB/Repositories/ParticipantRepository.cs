@@ -3,6 +3,7 @@ using MatchAssistant.Core.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ydb.Sdk.Table;
 using Ydb.Sdk.Value;
 
@@ -17,7 +18,7 @@ namespace MatchAssistant.Core.Persistence.YDB.Repositories
             this.driverProvider = driverProvider;
         }
 
-        public async IEnumerable<ParticipantsGroup> GetAllParticipants(int gameId)
+        public async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(int gameId)
         {
             using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
 
@@ -50,7 +51,7 @@ SELECT * FROM game_participants WHERE game_id = $game_id;";
             });
         }
 
-        public async ParticipantsGroup GetParticipantByName(int gameId, string participantName)
+        public async Task<ParticipantsGroup> GetParticipantByNameAsync(int gameId, string participantName)
         {
             using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
 
@@ -89,9 +90,9 @@ SELECT * FROM game_participants WHERE game_id = $game_id and name = $name;";
             };
         }
 
-        public async IEnumerable<ParticipantsGroup> GetRecentGamesParticipants(string gameTitle, int latestGameId, int recentGamesLimit)
+        public async Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, int latestGameId, int recentGamesLimit)
         {
-            var gameIds = GetRecentGamesIds(gameTitle, latestGameId, recentGamesLimit);
+            var gameIds = await GetRecentGamesIds(gameTitle, latestGameId, recentGamesLimit);
 
             if (!gameIds.Any())
             {
@@ -138,7 +139,7 @@ WHERE state.name = 'Accepted' AND game.title = $title AND game.id IN $game_ids;"
             });
         }
 
-        public async void AddParticipant(int gameId, ParticipantsGroup participantsGroup)
+        public async Task AddParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
         {
             if (participantsGroup == null)
             {
@@ -176,7 +177,7 @@ VALUES ($game_id, $name, $state_id, $count);";
             response.Status.EnsureSuccess();
         }
 
-        public async void UpdateParticipant(int gameId, ParticipantsGroup participantsGroup)
+        public async Task UpdateParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
         {
             if (participantsGroup == null)
             {
@@ -215,7 +216,7 @@ WHERE game_id = $game_id AND name = $name;";
             response.Status.EnsureSuccess();
         }
 
-        private async IEnumerable<int> GetRecentGamesIds(string gameTitle, int latestGameId, int recentGamesLimit)
+        private async Task<IEnumerable<int>> GetRecentGamesIds(string gameTitle, int latestGameId, int recentGamesLimit)
         {
             using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
 
@@ -248,12 +249,7 @@ LIMIT {recentGamesLimit};";
             var queryResponse = (ExecuteDataQueryResponse)response;
             var resultSet = queryResponse.Result.ResultSets[0];
 
-            return resultSet.Rows.Select(row => new ParticipantsGroup
-            {
-                Name = (string)row["name"],
-                Count = (int)row["count"],
-                StateId = (int)row["state"]
-            });
+            return resultSet.Rows.Select(row => (int)row["id"]);
         }
 
 

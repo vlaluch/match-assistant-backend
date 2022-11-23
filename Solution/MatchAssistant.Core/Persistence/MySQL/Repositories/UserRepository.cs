@@ -3,6 +3,7 @@ using MatchAssistant.Core.Entities;
 using MatchAssistant.Core.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.MySQL.Repositories
 {
@@ -15,7 +16,7 @@ namespace MatchAssistant.Core.Persistence.MySQL.Repositories
             this.dbConnectionProvider = dbConnectionProvider;
         }
 
-        public void Create(ChatUser user)
+        public async Task CreateAsync(ChatUser user)
         {
             if (user == null)
             {
@@ -33,10 +34,10 @@ VALUES (@Id, @Name, @UserName)";
                 user.UserName
             };
 
-            dbConnectionProvider.Connection.Execute(sqlQuery, queryParams);
+            await dbConnectionProvider.Connection.ExecuteAsync(sqlQuery, queryParams);
         }
 
-        public void AddToChat(long chatId, int userId)
+        public async Task AddToChatAsync(long chatId, int userId)
         {
             var sqlQuery = @"
 INSERT IGNORE INTO users_chats (UserId, ChatId) 
@@ -48,10 +49,10 @@ VALUES (@UserId, @ChatId)";
                 UserId = userId
             };
 
-            dbConnectionProvider.Connection.Execute(sqlQuery, queryParams);
+            await dbConnectionProvider.Connection.ExecuteAsync(sqlQuery, queryParams);
         }
 
-        public IEnumerable<ChatUser> GetChatUsers(long chatId)
+        public async Task<IEnumerable<ChatUser>> GetChatUsersAsync(long chatId)
         {
             var sqlQuery = @"
 SELECT user.* 
@@ -60,7 +61,7 @@ JOIN users_chats userChat ON user.Id = userChat.UserId
 WHERE userChat.ChatId = @ChatId";
 
             var queryParams = new { ChatId = chatId };
-            return dbConnectionProvider.Connection.Query<ChatUser>(sqlQuery, queryParams);
+            return await dbConnectionProvider.Connection.QueryAsync<ChatUser>(sqlQuery, queryParams);
         }
     }
 }

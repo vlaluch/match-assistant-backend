@@ -4,6 +4,7 @@ using MatchAssistant.Core.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.MySQL.Repositories
 {
@@ -16,23 +17,23 @@ namespace MatchAssistant.Core.Persistence.MySQL.Repositories
             this.dbConnectionProvider = dbConnectionProvider;
         }
 
-        public IEnumerable<ParticipantsGroup> GetAllParticipants(int gameId)
+        public async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(int gameId)
         {
             var sqlQuery = "SELECT * FROM game_participants WHERE GameId = @GameId";
             var queryParams = new { GameId = gameId };
-            return dbConnectionProvider.Connection.Query<ParticipantsGroup>(sqlQuery, queryParams);
+            return await dbConnectionProvider.Connection.QueryAsync<ParticipantsGroup>(sqlQuery, queryParams);
         }
 
-        public ParticipantsGroup GetParticipantByName(int gameId, string participantName)
+        public async Task<ParticipantsGroup> GetParticipantByNameAsync(int gameId, string participantName)
         {
             var sqlQuery = "SELECT * FROM game_participants WHERE GameId = @GameId and Name = @Name";
             var queryParams = new { GameId = gameId, Name = participantName };
-            return dbConnectionProvider.Connection.QueryFirstOrDefault<ParticipantsGroup>(sqlQuery, queryParams);
+            return await dbConnectionProvider.Connection.QueryFirstOrDefaultAsync<ParticipantsGroup>(sqlQuery, queryParams);
         }
 
-        public IEnumerable<ParticipantsGroup> GetRecentGamesParticipants(string gameTitle, int latestGameId, int recentGamesLimit)
+        public async Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, int latestGameId, int recentGamesLimit)
         {
-            var gameIds = GetRecentGamesIds(gameTitle, latestGameId, recentGamesLimit);
+            var gameIds = await GetRecentGamesIds(gameTitle, latestGameId, recentGamesLimit);
 
             if (!gameIds.Any())
             {
@@ -45,10 +46,10 @@ JOIN games game ON game.Id = participant.GameId
 JOIN participant_states state ON state.Id = participant.StateId 
 WHERE state.Name = 'Accepted' AND game.Title = @Title AND game.Id IN @GameIds";
             var queryParams = new { Id = latestGameId, Title = gameTitle, GameIds = gameIds };
-            return dbConnectionProvider.Connection.Query<ParticipantsGroup>(sqlQuery, queryParams);
+            return await dbConnectionProvider.Connection.QueryAsync<ParticipantsGroup>(sqlQuery, queryParams);
         }
 
-        public void AddParticipant(int gameId, ParticipantsGroup participantsGroup)
+        public async Task AddParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
         {
             if (participantsGroup == null)
             {
@@ -67,10 +68,10 @@ VALUES (@GameId, @Name, @StateId, @Count)";
                 participantsGroup.Count
             };
 
-            dbConnectionProvider.Connection.Execute(sqlQuery, queryParams);
+            await dbConnectionProvider.Connection.ExecuteAsync(sqlQuery, queryParams);
         }
 
-        public void UpdateParticipant(int gameId, ParticipantsGroup participantsGroup)
+        public async Task UpdateParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
         {
             if (participantsGroup == null)
             {
@@ -90,10 +91,10 @@ WHERE GameId = @GameId AND Name = @Name";
                 participantsGroup.Count
             };
 
-            dbConnectionProvider.Connection.Execute(sqlQuery, queryParams);
+            await dbConnectionProvider.Connection.ExecuteAsync(sqlQuery, queryParams);
         }
 
-        private IEnumerable<int> GetRecentGamesIds(string gameTitle, int latestGameId, int recentGamesLimit)
+        private async Task<IEnumerable<int>> GetRecentGamesIds(string gameTitle, int latestGameId, int recentGamesLimit)
         {
             var sqlQuery = $@"
 SELECT game.Id 
@@ -103,7 +104,7 @@ ORDER BY game.Date DESC
 LIMIT {recentGamesLimit}";
 
             var queryParams = new { Id = latestGameId, Title = gameTitle };
-            return dbConnectionProvider.Connection.Query<int>(sqlQuery, queryParams);
+            return await dbConnectionProvider.Connection.QueryAsync<int>(sqlQuery, queryParams);
         }
 
 

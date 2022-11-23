@@ -2,6 +2,7 @@
 using MatchAssistant.Core.Persistence.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.InMemory
 {
@@ -14,14 +15,15 @@ namespace MatchAssistant.Core.Persistence.InMemory
             chats = new List<GameChat>();
         }
 
-        public void Create(GameChat chat)
+        public Task CreateAsync(GameChat chat)
         {
             chats.Add(chat);
+            return Task.CompletedTask;
         }
 
-        public GameChat GetChatByName(string name)
+        public Task<GameChat> GetChatByNameAsync(string name)
         {
-            return chats.FirstOrDefault(chat => chat.Name == name);
+            return Task.FromResult(chats.FirstOrDefault(chat => chat.Name == name));
         }
     }
 }

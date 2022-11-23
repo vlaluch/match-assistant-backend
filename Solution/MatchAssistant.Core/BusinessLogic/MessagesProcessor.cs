@@ -3,6 +3,7 @@ using MatchAssistant.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.BusinessLogic
 {
@@ -15,7 +16,7 @@ namespace MatchAssistant.Core.BusinessLogic
             this.handlers = handlers;
         }
 
-        public Response ProcessMessage(ChatMessage message)
+        public async Task<Response> ProcessMessageAsync(ChatMessage message)
         {
             if (message == null)
                 return new Response();
@@ -36,7 +37,7 @@ namespace MatchAssistant.Core.BusinessLogic
             if (handler == null)
                 throw new NotImplementedException("Unexpected command");
 
-            return handler.Handle(command);
+            return await handler.HandleAsync(command);
         }
     }
 }

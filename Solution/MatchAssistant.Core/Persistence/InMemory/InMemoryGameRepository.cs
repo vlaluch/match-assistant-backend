@@ -3,6 +3,7 @@ using MatchAssistant.Core.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.InMemory
 {
@@ -15,19 +16,20 @@ namespace MatchAssistant.Core.Persistence.InMemory
             games = new List<Game>();
         }
 
-        public void AddGame(Game game)
+        public Task AddGameAsync(Game game)
         {
             games.Add(game);
+            return Task.CompletedTask;
         }
 
-        public Game FindGameByTitleAndDate(string title, DateTime date)
+        public Task<Game> FindGameByTitleAndDateAsync(string title, DateTime date)
         {
-            return games.FirstOrDefault(game => game.Title == title && game.Date == date);
+            return Task.FromResult(games.FirstOrDefault(game => game.Title == title && game.Date == date));
         }
 
-        public Game GetLatestGameByTitle(string title)
+        public Task<Game> GetLatestGameByTitleAsync(string title)
         {
-            return games.FirstOrDefault(game => game.Title == title);
+            return Task.FromResult(games.FirstOrDefault(game => game.Title == title));
         }
     }
 }

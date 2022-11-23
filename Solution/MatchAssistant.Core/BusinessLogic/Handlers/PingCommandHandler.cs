@@ -4,30 +4,31 @@ using MatchAssistant.Core.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.BusinessLogic.Handlers
 {
     public class PingCommandHandler : IHandleCommand
     {
-        private readonly IParticipantRepository participantMapper;
-        private readonly IGameRepository gameMapper;
-        private readonly IUserRepository userMapper;
+        private readonly IParticipantRepository participantRepository;
+        private readonly IGameRepository gameRepository;
+        private readonly IUserRepository userRepository;
 
         public CommandType CommandType => CommandType.Ping;
 
-        public PingCommandHandler(IParticipantRepository participantMapper, IGameRepository gameMapper, IUserRepository userMapper)
+        public PingCommandHandler(IParticipantRepository participantRepository, IGameRepository gameRepository, IUserRepository userRepository)
         {
-            this.participantMapper = participantMapper;
-            this.gameMapper = gameMapper;
-            this.userMapper = userMapper;
+            this.participantRepository = participantRepository;
+            this.gameRepository = gameRepository;
+            this.userRepository = userRepository;
         }
 
-        public Response Handle(Command command)
+        public async Task<Response> HandleAsync(Command command)
         {
             var filters = MessageParser.ParsePingFilters(MessageParser.GetCommandArgumentsFromMessage(command.Message));
 
-            var recentGamesParticipants = GetRecentGamesParticipants(command.Message.Chat.Name);
-            var curentGameParticipants = GetAllParticipantsForGame(command.Message.Chat.Name);
+            var recentGamesParticipants = await GetRecentGamesParticipantsAsync(command.Message.Chat.Name);
+            var curentGameParticipants = await GetAllParticipantsForGameAsync(command.Message.Chat.Name);
 
             var participantsNames = new List<string>();
 
@@ -45,15 +46,16 @@ namespace MatchAssistant.Core.BusinessLogic.Handlers
                     .Select(participant => participant.Name).Distinct());
             }
 
-            var usersMap = GetChatUsers(command.Message.Chat.Id).ToDictionary(user => user.Name);
+            var users = await GetChatUsersAsync(command.Message.Chat.Id);
+            var usersMap = users.ToDictionary(user => user.Name);
 
             var selectedUsers = usersMap.Where(user => participantsNames.Contains(user.Key)).Select(user => user.Value).ToArray();
             return new Response(selectedUsers);
         }
 
-        private IEnumerable<ParticipantsGroup> GetRecentGamesParticipants(string gameTitle)
+        private async Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle)
         {
-            var game = gameMapper.GetLatestGameByTitle(gameTitle);
+            var game = gameRepository.GetLatestGameByTitleAsync(gameTitle);
 
             if (game == null)
             {
@@ -62,24 +64,24 @@ namespace MatchAssistant.Core.BusinessLogic.Handlers
 
             const int recentGamesLimit = 3;
 
-            return participantMapper.GetRecentGamesParticipants(gameTitle, game.Id, recentGamesLimit);
+            return await participantRepository.GetRecentGamesParticipantsAsync(gameTitle, game.Id, recentGamesLimit);
         }
 
-        private IEnumerable<ParticipantsGroup> GetAllParticipantsForGame(string gameTitle)
+        private async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsForGameAsync(string gameTitle)
         {
-            var game = gameMapper.GetLatestGameByTitle(gameTitle);
+            var game = gameRepository.GetLatestGameByTitleAsync(gameTitle);
 
             if (game == null)
             {
                 return Array.Empty<ParticipantsGroup>();
             }
 
-            return participantMapper.GetAllParticipants(game.Id);
+            return await participantRepository.GetAllParticipantsAsync(game.Id);
         }
 
-        public IEnumerable<ChatUser> GetChatUsers(long chatId)
+        public async Task<IEnumerable<ChatUser>> GetChatUsersAsync(long chatId)
         {
-            return userMapper.GetChatUsers(chatId);
+            return await userRepository.GetChatUsersAsync(chatId);
         }
     }
 }

@@ -2,6 +2,7 @@
 using MatchAssistant.Core.Persistence.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.InMemory
 {
@@ -16,7 +17,7 @@ namespace MatchAssistant.Core.Persistence.InMemory
             chatUsers = new Dictionary<long, List<int>>();
         }
 
-        public void AddToChat(long chatId, int userId)
+        public Task AddToChatAsync(long chatId, int userId)
         {
             if (!chatUsers.ContainsKey(chatId))
             {
@@ -26,25 +27,27 @@ namespace MatchAssistant.Core.Persistence.InMemory
             {
                 chatUsers[chatId].Add(userId);
             }
+            return Task.CompletedTask;
         }
 
-        public void Create(ChatUser user)
+        public Task CreateAsync(ChatUser user)
         {
             if (!users.ContainsKey(user.Id))
             {
                 users.Add(user.Id, user);
-            }            
+            }
+            return Task.CompletedTask;
         }
 
-        public IEnumerable<ChatUser> GetChatUsers(long chatId)
+        public Task<IEnumerable<ChatUser>> GetChatUsersAsync(long chatId)
         {
             if (!chatUsers.ContainsKey(chatId))
             {
-                return Enumerable.Empty<ChatUser>();
+                return Task.FromResult(Enumerable.Empty<ChatUser>());
             }
 
             var usersIds = chatUsers[chatId];
-            return usersIds.Select(userId => users[userId]);
+            return Task.FromResult(usersIds.Select(userId => users[userId]));
         }
     }
 }

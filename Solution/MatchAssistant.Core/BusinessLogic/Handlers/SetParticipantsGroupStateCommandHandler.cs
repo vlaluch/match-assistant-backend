@@ -3,61 +3,62 @@ using MatchAssistant.Core.Entities;
 using MatchAssistant.Core.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.BusinessLogic.Handlers
 {
     public class SetParticipantsGroupStateCommandHandler : IHandleCommand
     {
-        private readonly IGameRepository gameMapper;
-        private readonly IParticipantRepository participantMapper;
+        private readonly IGameRepository gameRepository;
+        private readonly IParticipantRepository participantRepository;
 
         public CommandType CommandType => CommandType.SetState;
 
-        public SetParticipantsGroupStateCommandHandler(IGameRepository gameMapper, IParticipantRepository participantMapper)
+        public SetParticipantsGroupStateCommandHandler(IGameRepository gameRepository, IParticipantRepository participantRepository)
         {
-            this.gameMapper = gameMapper;
-            this.participantMapper = participantMapper;
+            this.gameRepository = gameRepository;
+            this.participantRepository = participantRepository;
         }
 
-        public Response Handle(Command command)
+        public async Task<Response> HandleAsync(Command command)
         {
             var participantsGroup = MessageParser.GetParticipantsGroupFromMessage(command.Message);
-            var hasUpdates = UpdateParticipantsGroupState(command.Message.Chat.Name, participantsGroup);
+            var hasUpdates = await UpdateParticipantsGroupStateAsync(command.Message.Chat.Name, participantsGroup);
 
             if (!hasUpdates) return new Response();
 
-            var participants = GetAllParticipantsForGame(command.Message.Chat.Name);
+            var participants = await GetAllParticipantsForGameAsync(command.Message.Chat.Name);
             return new Response(participants);
         }
 
-        private bool UpdateParticipantsGroupState(string gameTitle, ParticipantsGroup participantsGroup)
+        private async Task<bool> UpdateParticipantsGroupStateAsync(string gameTitle, ParticipantsGroup participantsGroup)
         {
             if (participantsGroup == null)
             {
                 throw new ArgumentException($"{nameof(participantsGroup)} is null");
             }
 
-            var game = gameMapper.GetLatestGameByTitle(gameTitle);
+            var game = await gameRepository.GetLatestGameByTitleAsync(gameTitle);
 
             if (game == null)
             {
                 return false;
             }
 
-            var existingGroup = participantMapper.GetParticipantByName(game.Id, participantsGroup.Name);
+            var existingGroup = await participantRepository.GetParticipantByNameAsync(game.Id, participantsGroup.Name);
 
             if (existingGroup == null)
             {
-                participantMapper.AddParticipant(game.Id, participantsGroup);
+                await participantRepository.AddParticipantAsync(game.Id, participantsGroup);
                 return participantsGroup.State == ParticipantState.Accepted || participantsGroup.State == ParticipantState.NotSured;
             }
             else
             {
-                return HandleUpdates(game.Id, existingGroup, participantsGroup);
+                return await HandleUpdatesAsync(game.Id, existingGroup, participantsGroup);
             }
         }
 
-        private bool HandleUpdates(int gameId, ParticipantsGroup existingGroup, ParticipantsGroup updatedGroup)
+        private async Task<bool> HandleUpdatesAsync(int gameId, ParticipantsGroup existingGroup, ParticipantsGroup updatedGroup)
         {
             if (existingGroup.State != updatedGroup.State)
             {
@@ -79,29 +80,29 @@ namespace MatchAssistant.Core.BusinessLogic.Handlers
                     existingGroup.Count = updatedGroup.Count;
                 }
 
-                participantMapper.UpdateParticipant(gameId, existingGroup);
+                await participantRepository.UpdateParticipantAsync(gameId, existingGroup);
                 return true;
             }
             else if (updatedGroup.State == ParticipantState.Accepted && updatedGroup.Count > 0 && !updatedGroup.IsSinglePerson)
             {
                 existingGroup.Count += updatedGroup.Count;
-                participantMapper.UpdateParticipant(gameId, existingGroup);
+                await participantRepository.UpdateParticipantAsync(gameId, existingGroup);
                 return true;
             }
 
             return false;
         }
 
-        private IEnumerable<ParticipantsGroup> GetAllParticipantsForGame(string gameTitle)
+        private async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsForGameAsync(string gameTitle)
         {
-            var game = gameMapper.GetLatestGameByTitle(gameTitle);
+            var game = gameRepository.GetLatestGameByTitleAsync(gameTitle);
 
             if (game == null)
             {
                 return Array.Empty<ParticipantsGroup>();
             }
 
-            return participantMapper.GetAllParticipants(game.Id);
+            return await participantRepository.GetAllParticipantsAsync(game.Id);
         }
     }
 }

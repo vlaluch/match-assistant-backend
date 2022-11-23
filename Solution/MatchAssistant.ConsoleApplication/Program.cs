@@ -48,7 +48,7 @@ namespace MatchAssistant.ConsoleApplication
             serviceProvider = services.BuildServiceProvider();
         }
 
-        private static void ClientOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
+        private async static void ClientOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
             var message = messageEventArgs.Message;
 
@@ -63,12 +63,12 @@ namespace MatchAssistant.ConsoleApplication
 
             try
             {
-                var response = messagesProcessor.ProcessMessage(chatMessage);
+                var response = await messagesProcessor.ProcessMessageAsync(chatMessage);
                 var formattedResponse = TelegramCommandResponseFormatter.FormatCommandResponse(chatMessage, response);
 
                 if (!string.IsNullOrEmpty(formattedResponse))
                 {
-                    client.SendTextMessageAsync(message.Chat.Id, formattedResponse, ParseMode.Markdown);
+                    await client.SendTextMessageAsync(message.Chat.Id, formattedResponse, ParseMode.Markdown);
                 }
             }
             catch (Exception e)

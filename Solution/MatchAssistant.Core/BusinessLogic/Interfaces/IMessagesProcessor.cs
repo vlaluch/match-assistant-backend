@@ -1,9 +1,10 @@
 ﻿using MatchAssistant.Core.Entities;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.BusinessLogic.Interfaces
 {
     public interface IMessagesProcessor
     {
-        Response ProcessMessage(ChatMessage message);
+        Task<Response> ProcessMessageAsync(ChatMessage message);
     }
 }

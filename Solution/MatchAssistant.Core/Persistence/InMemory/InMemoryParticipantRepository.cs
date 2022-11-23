@@ -2,6 +2,7 @@
 using MatchAssistant.Core.Persistence.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.InMemory
 {
@@ -14,7 +15,7 @@ namespace MatchAssistant.Core.Persistence.InMemory
             participants = new Dictionary<int, List<ParticipantsGroup>>();
         }
 
-        public void AddParticipant(int gameId, ParticipantsGroup participantsGroup)
+        public Task AddParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
         {
             if (!participants.ContainsKey(gameId))
             {
@@ -24,37 +25,40 @@ namespace MatchAssistant.Core.Persistence.InMemory
             {
                 participants[gameId].Add(participantsGroup);
             }
+
+            return Task.CompletedTask;
         }
 
-        public IEnumerable<ParticipantsGroup> GetAllParticipants(int gameId)
+        public Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(int gameId)
         {
             if (!participants.ContainsKey(gameId))
             {
-                return Enumerable.Empty<ParticipantsGroup>();
+                return Task.FromResult(Enumerable.Empty<ParticipantsGroup>());
             }
 
-            return participants[gameId];
+            return Task.FromResult(participants[gameId].AsEnumerable());
         }
 
-        public ParticipantsGroup GetParticipantByName(int gameId, string participantName)
+        public Task<ParticipantsGroup> GetParticipantByNameAsync(int gameId, string participantName)
         {
             if (!participants.ContainsKey(gameId))
             {
-                return null;
+                return Task.FromResult<ParticipantsGroup>(null);
             }
 
-            return participants[gameId].FirstOrDefault(x => x.Name == participantName);
+            return Task.FromResult(participants[gameId].FirstOrDefault(x => x.Name == participantName));
         }
 
-        public IEnumerable<ParticipantsGroup> GetRecentGamesParticipants(string gameTitle, int latestGameId, int recentGamesLimit)
+        public Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, int latestGameId, int recentGamesLimit)
         {
             throw new System.NotImplementedException();
         }
 
-        public void UpdateParticipant(int gameId, ParticipantsGroup participantsGroup)
+        public Task UpdateParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
         {
             var participant = participants[gameId].FirstOrDefault(x => x.Name == participantsGroup.Name);
             participant = participantsGroup;
+            return Task.CompletedTask;
         }
     }
 }

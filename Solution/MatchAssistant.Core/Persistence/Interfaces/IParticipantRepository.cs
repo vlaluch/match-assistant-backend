@@ -1,18 +1,19 @@
 ﻿using MatchAssistant.Core.Entities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.Interfaces
 {
     public interface IParticipantRepository
     {
-        IEnumerable<ParticipantsGroup> GetAllParticipants(int gameId);
+        Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(int gameId);
 
-        ParticipantsGroup GetParticipantByName(int gameId, string participantName);
+        Task<ParticipantsGroup> GetParticipantByNameAsync(int gameId, string participantName);
 
-        IEnumerable<ParticipantsGroup> GetRecentGamesParticipants(string gameTitle, int latestGameId, int recentGamesLimit);
+        Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, int latestGameId, int recentGamesLimit);
 
-        void AddParticipant(int gameId, ParticipantsGroup participantsGroup);
+        Task AddParticipantAsync(int gameId, ParticipantsGroup participantsGroup);
 
-        void UpdateParticipant(int gameId, ParticipantsGroup participantsGroup);
+        Task UpdateParticipantAsync(int gameId, ParticipantsGroup participantsGroup);
     }
 }

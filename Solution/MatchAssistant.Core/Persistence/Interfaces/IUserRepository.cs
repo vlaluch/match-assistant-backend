@@ -1,14 +1,15 @@
 ﻿using MatchAssistant.Core.Entities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.Interfaces
 {
     public interface IUserRepository
     {
-        void Create(ChatUser user);
+        Task CreateAsync(ChatUser user);
 
-        void AddToChat(long chatId, int userId);
+        Task AddToChatAsync(long chatId, int userId);
 
-        IEnumerable<ChatUser> GetChatUsers(long chatId);
+        Task<IEnumerable<ChatUser>> GetChatUsersAsync(long chatId);
     }
 }

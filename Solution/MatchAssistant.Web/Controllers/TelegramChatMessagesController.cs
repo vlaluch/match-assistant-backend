@@ -31,7 +31,7 @@ namespace MatchAssistant.Web.Controllers
 
             var chatMessage = message.ToChatMessage();
 
-            var response = messagesProcessor.ProcessMessage(chatMessage);
+            var response = await messagesProcessor.ProcessMessageAsync(chatMessage);
 
             var formattedResponse = TelegramCommandResponseFormatter.FormatCommandResponse(chatMessage, response);
 

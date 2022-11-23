@@ -2,6 +2,7 @@
 using MatchAssistant.Core.Entities;
 using MatchAssistant.Core.Persistence.Interfaces;
 using System;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.MySQL.Repositories
 {
@@ -14,7 +15,7 @@ namespace MatchAssistant.Core.Persistence.MySQL.Repositories
             this.dbConnectionProvider = dbConnectionProvider;
         }
 
-        public void Create(GameChat chat)
+        public async Task CreateAsync(GameChat chat)
         {
             if (chat == null)
             {
@@ -23,14 +24,14 @@ namespace MatchAssistant.Core.Persistence.MySQL.Repositories
 
             var sqlQuery = @"INSERT IGNORE INTO chats (Id, Name) VALUES (@Id, @Name)";
             var queryParams = new { chat.Id, chat.Name };
-            dbConnectionProvider.Connection.Execute(sqlQuery, queryParams);
+            await dbConnectionProvider.Connection.ExecuteAsync(sqlQuery, queryParams);
         }
 
-        public GameChat GetChatByName(string name)
+        public async Task<GameChat> GetChatByNameAsync(string name)
         {
             var sqlQuery = "SELECT * FROM chats WHERE Name = @Name";
             var queryParams = new { Name = name };
-            return dbConnectionProvider.Connection.QueryFirstOrDefault<GameChat>(sqlQuery, queryParams);
+            return await dbConnectionProvider.Connection.QueryFirstOrDefaultAsync<GameChat>(sqlQuery, queryParams);
         }
     }
 }

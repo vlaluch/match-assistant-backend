@@ -36,7 +36,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1", countResponse);
@@ -48,7 +48,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("2", countResponse);
@@ -60,7 +60,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("2", countResponse);
@@ -72,7 +72,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ Вася");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1", countResponse);
@@ -83,10 +83,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ Вася");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+ Вася");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("2", countResponse);
@@ -98,10 +98,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1", countResponse);
@@ -113,10 +113,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("2", countResponse);
@@ -128,10 +128,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("2", countResponse);
@@ -143,10 +143,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+3");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("5", countResponse);
@@ -158,10 +158,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("4", countResponse);
@@ -173,10 +173,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("4", countResponse);
@@ -192,10 +192,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("0", countResponse);
@@ -207,10 +207,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "- 2 из вк");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("0", countResponse);
@@ -222,10 +222,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-2");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("0", countResponse);
@@ -237,10 +237,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ Вася");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "- Вася");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("0", countResponse);
@@ -252,13 +252,13 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var message3 = CreateTextMessageFromUser(1, "Bob", "-");
-            target.ProcessMessage(message3);
+            target.ProcessMessageAsync(message3);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("0", countResponse);
@@ -270,13 +270,13 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 6 из вк");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "- 2 из вк");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var message3 = CreateTextMessageFromUser(1, "Bob", "- 2 из вк");
-            target.ProcessMessage(message3);
+            target.ProcessMessageAsync(message3);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("2", countResponse);
@@ -288,13 +288,13 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+6");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-2");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var message3 = CreateTextMessageFromUser(1, "Bob", "-2");
-            target.ProcessMessage(message3);
+            target.ProcessMessageAsync(message3);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("2", countResponse);
@@ -306,10 +306,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-4");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("0", countResponse);
@@ -321,10 +321,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "- 4 из вк");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("0", countResponse);
@@ -338,16 +338,16 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var message3 = CreateTextMessageFromUser(1, "Bob", "-2");
-            target.ProcessMessage(message3);
+            target.ProcessMessageAsync(message3);
 
             var message4 = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessage(message4);
+            target.ProcessMessageAsync(message4);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1", countResponse);
@@ -359,16 +359,16 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var message3 = CreateTextMessageFromUser(1, "Bob", "-2");
-            target.ProcessMessage(message3);
+            target.ProcessMessageAsync(message3);
 
             var message4 = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessage(message4);
+            target.ProcessMessageAsync(message4);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("2", countResponse);
@@ -387,7 +387,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var listResponse = GetListCommandResult();
             Assert.AreEqual("1-2. из вк - 2\r\n", listResponse);
@@ -399,7 +399,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ Иван Иванов");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var listResponse = GetListCommandResult();
             Assert.AreEqual("1. Иван Иванов\r\n", listResponse);
@@ -417,7 +417,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+-");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1±", countResponse);
@@ -429,7 +429,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/-");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1±", countResponse);
@@ -441,7 +441,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+\\-");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1±", countResponse);
@@ -453,7 +453,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "±");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1±", countResponse);
@@ -465,7 +465,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/- 2 из вк");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("2±", countResponse);
@@ -477,7 +477,7 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/- Вася");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1±", countResponse);
@@ -489,10 +489,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/-");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(2, "Jack", "+");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1 и 1±", countResponse);
@@ -504,10 +504,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/-");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("1", countResponse);
@@ -519,10 +519,10 @@ namespace MatchAssistant.Core.Tests
             CreateNewGame();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/-");
-            target.ProcessMessage(message);
+            target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-");
-            target.ProcessMessage(message2);
+            target.ProcessMessageAsync(message2);
 
             var countResponse = GetCountCommandResult();
             Assert.AreEqual("0", countResponse);
@@ -553,7 +553,7 @@ namespace MatchAssistant.Core.Tests
                 Text = "/new"
             };
 
-            return target.ProcessMessage(newGameCommand);
+            return target.ProcessMessageAsync(newGameCommand);
         }
 
         private string GetCountCommandResult()
@@ -565,7 +565,7 @@ namespace MatchAssistant.Core.Tests
                 Text = "/count"
             };
 
-            return target.ProcessMessage(countCommand);
+            return target.ProcessMessageAsync(countCommand);
         }
 
         private string GetListCommandResult()
@@ -577,7 +577,7 @@ namespace MatchAssistant.Core.Tests
                 Text = "/list"
             };
 
-            return target.ProcessMessage(listCommand);
+            return target.ProcessMessageAsync(listCommand);
         }
 
         #endregion

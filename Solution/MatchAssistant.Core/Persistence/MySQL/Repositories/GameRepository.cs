@@ -2,6 +2,7 @@
 using MatchAssistant.Core.Entities;
 using MatchAssistant.Core.Persistence.Interfaces;
 using System;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.Persistence.MySQL.Repositories
 {
@@ -14,20 +15,20 @@ namespace MatchAssistant.Core.Persistence.MySQL.Repositories
             this.dbConnectionProvider = dbConnectionProvider;
         }
 
-        public void AddGame(Game game)
+        public async Task AddGameAsync(Game game)
         {
             var sqlQuery = "INSERT INTO games (Title, Date) VALUES (@Title, @Date)";
-            dbConnectionProvider.Connection.Execute(sqlQuery, game);
+            await dbConnectionProvider.Connection.ExecuteAsync(sqlQuery, game);
         }
 
-        public Game FindGameByTitleAndDate(string title, DateTime date)
+        public async Task<Game> FindGameByTitleAndDateAsync(string title, DateTime date)
         {
             var sqlQuery = "SELECT * FROM games WHERE Title = @Title AND Date = @Date";
             var queryParams = new { Title = title, Date = date };
-            return dbConnectionProvider.Connection.QueryFirstOrDefault<Game>(sqlQuery, queryParams);
+            return await dbConnectionProvider.Connection.QueryFirstOrDefaultAsync<Game>(sqlQuery, queryParams);
         }
 
-        public Game GetLatestGameByTitle(string title)
+        public async Task<Game> GetLatestGameByTitleAsync(string title)
         {
             var sqlQuery = @"
 SELECT * 
@@ -37,7 +38,7 @@ ORDER BY Date DESC
 LIMIT 1";
 
             var queryParams = new { Title = title };
-            return dbConnectionProvider.Connection.QueryFirstOrDefault<Game>(sqlQuery, queryParams);
+            return await dbConnectionProvider.Connection.QueryFirstOrDefaultAsync<Game>(sqlQuery, queryParams);
         }
     }
 }

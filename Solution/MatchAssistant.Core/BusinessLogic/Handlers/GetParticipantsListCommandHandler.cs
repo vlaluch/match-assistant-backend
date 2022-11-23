@@ -3,38 +3,39 @@ using MatchAssistant.Core.Entities;
 using MatchAssistant.Core.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MatchAssistant.Core.BusinessLogic.Handlers
 {
     public class GetParticipantsListCommandHandler : IHandleCommand
     {
-        private readonly IParticipantRepository participantMapper;
-        private readonly IGameRepository gameMapper;
+        private readonly IParticipantRepository participantRepository;
+        private readonly IGameRepository gameRepository;
 
         public CommandType CommandType => CommandType.List;
 
-        public GetParticipantsListCommandHandler(IParticipantRepository participantMapper, IGameRepository gameMapper)
+        public GetParticipantsListCommandHandler(IParticipantRepository participantRepository, IGameRepository gameRepository)
         {
-            this.participantMapper = participantMapper;
-            this.gameMapper = gameMapper;
+            this.participantRepository = participantRepository;
+            this.gameRepository = gameRepository;
         }
 
-        public Response Handle(Command command)
+        public async Task<Response> HandleAsync(Command command)
         {
-            var participants = GetAllParticipantsForGame(command.Message.Chat.Name);
+            var participants = await GetAllParticipantsForGameAsync(command.Message.Chat.Name);
             return new Response(participants);
         }
 
-        private IEnumerable<ParticipantsGroup> GetAllParticipantsForGame(string gameTitle)
+        private async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsForGameAsync(string gameTitle)
         {
-            var game = gameMapper.GetLatestGameByTitle(gameTitle);
+            var game = gameRepository.GetLatestGameByTitleAsync(gameTitle);
 
             if (game == null)
             {
                 return Array.Empty<ParticipantsGroup>();
             }
 
-            return participantMapper.GetAllParticipants(game.Id);
+            return await participantRepository.GetAllParticipantsAsync(game.Id);
         }
     }
 }
