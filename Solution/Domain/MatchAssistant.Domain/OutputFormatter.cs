@@ -1,4 +1,6 @@
 ﻿using MatchAssistant.Domain.Core.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MatchAssistant.Domain
 {

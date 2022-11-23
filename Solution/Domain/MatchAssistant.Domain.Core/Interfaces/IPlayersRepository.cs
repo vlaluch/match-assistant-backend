@@ -1,4 +1,5 @@
 ﻿using MatchAssistant.Domain.Core.Entities;
+using System.Collections.Generic;
 
 namespace MatchAssistant.Domain.Core.Interfaces
 {

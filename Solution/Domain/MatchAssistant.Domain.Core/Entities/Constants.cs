@@ -1,4 +1,6 @@
-﻿namespace MatchAssistant.Domain.Core.Entities
+﻿using System;
+
+namespace MatchAssistant.Domain.Core.Entities
 {
     public enum TeamGenerationAlgorithm
     {

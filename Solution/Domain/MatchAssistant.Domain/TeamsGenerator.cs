@@ -1,5 +1,8 @@
 ﻿using MatchAssistant.Domain.Interfaces;
 using MatchAssistant.Domain.Core.Entities;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace MatchAssistant.Domain
 {

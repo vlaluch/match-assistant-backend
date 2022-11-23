@@ -1,4 +1,7 @@
-﻿namespace MatchAssistant.Domain.Core.Entities
+﻿using System;
+using System.Collections.Generic;
+
+namespace MatchAssistant.Domain.Core.Entities
 {
     public class Game
     {
