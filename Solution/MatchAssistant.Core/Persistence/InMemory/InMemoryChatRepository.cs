@@ -3,13 +3,13 @@ using MatchAssistant.Core.Persistence.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MatchAssistant.Core.Tests.Infrastructure.Mappers
+namespace MatchAssistant.Core.Persistence.InMemory
 {
-    public class InMemoryChatMapper : IChatRepository
+    public class InMemoryChatRepository : IChatRepository
     {
         private readonly List<GameChat> chats;
 
-        public InMemoryChatMapper()
+        public InMemoryChatRepository()
         {
             chats = new List<GameChat>();
         }

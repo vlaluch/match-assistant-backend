@@ -1,6 +1,7 @@
 ﻿using MatchAssistant.Core.BusinessLogic;
 using MatchAssistant.Core.Entities;
-using MatchAssistant.Core.Tests.Infrastructure.Mappers;
+using MatchAssistant.Core.Persistence.InMemory;
+    
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MatchAssistant.Core.Tests
@@ -14,12 +15,12 @@ namespace MatchAssistant.Core.Tests
         public void Init()
         {
             var participantsService = new ParticipantsService(
-                    new InMemoryGameMapper(),
-                    new InMemoryParticipantMapper());
+                    new InMemoryGameRepository(),
+                    new InMemoryParticipantRepository());
 
             var chatsService = new ChatsService(
                 new InMemoryChatMapper(),
-                new InMemoryUserMapper()
+                new InMemoryUserRepository()
                 );
 
             target = new MessagesProcessor(participantsService, chatsService);

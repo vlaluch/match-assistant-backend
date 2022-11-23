@@ -2,7 +2,7 @@
 using MySql.Data.MySqlClient;
 using System.Data;
 
-namespace MatchAssistant.Core.Persistence
+namespace MatchAssistant.Core.Persistence.MySQL
 {
     public class DbConnectionProvider : IDbConnectionProvider, System.IDisposable
     {

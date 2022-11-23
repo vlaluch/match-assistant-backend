@@ -12,7 +12,6 @@ namespace MatchAssistant.Web.Infrastructure
             var configurationSettingsProvider = new ConfigurationSettingsProvider();
 
             services.AddSingleton<IDbConnectionStringProvider>(configurationSettingsProvider);
-            services.AddSingleton<IBotSettingsProvider>(configurationSettingsProvider);
 
             services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(configurationSettingsProvider.Token));
         }

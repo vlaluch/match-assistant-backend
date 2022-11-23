@@ -3,7 +3,7 @@ using MatchAssistant.Core.Entities;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MatchAssistant.Web.Infrastructure
+namespace MatchAssistant.Core.MessagingGateways.Telegram
 {
     public class TelegramCommandResponseFormatter
     {

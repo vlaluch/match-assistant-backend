@@ -4,20 +4,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MatchAssistant.Core.Tests.Infrastructure.Mappers
+namespace MatchAssistant.Core.Persistence.Disk
 {
-    public class InMemoryGameMapper : IGameRepository
+    public class DiskGameRepository : IGameRepository
     {
         private readonly List<Game> games;
+        private readonly JsonStorage<List<Game>> storage;
 
-        public InMemoryGameMapper()
+        public DiskGameRepository(JsonStorage<List<Game>> storage)
         {
+            this.storage = storage;
+
             games = new List<Game>();
+
+            var storedGames = storage.Load();
+
+            if (storedGames != null)
+            {
+                games.AddRange(storedGames);
+            }
         }
 
         public void AddGame(Game game)
         {
             games.Add(game);
+            storage.Save(games);
         }
 
         public Game FindGameByTitleAndDate(string title, DateTime date)

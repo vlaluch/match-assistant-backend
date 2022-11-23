@@ -3,14 +3,14 @@ using MatchAssistant.Core.Persistence.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MatchAssistant.Core.Tests.Infrastructure.Mappers
+namespace MatchAssistant.Core.Persistence.InMemory
 {
-    public class InMemoryUserMapper : IUserRepository
+    public class InMemoryUserRepository : IUserRepository
     {
         private readonly Dictionary<int, ChatUser> users;
         private readonly Dictionary<long, List<int>> chatUsers;
 
-        public InMemoryUserMapper()
+        public InMemoryUserRepository()
         {
             users = new Dictionary<int, ChatUser>();
             chatUsers = new Dictionary<long, List<int>>();

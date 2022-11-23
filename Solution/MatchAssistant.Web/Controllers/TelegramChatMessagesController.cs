@@ -1,5 +1,5 @@
 ﻿using MatchAssistant.Core.BusinessLogic.Interfaces;
-using MatchAssistant.Web.Infrastructure;
+using MatchAssistant.Core.MessagingGateways.Telegram;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -7,13 +7,13 @@ using Telegram.Bot.Types.Enums;
 
 namespace MatchAssistant.Web.Controllers
 {
-    [Route("chatMessages")]
-    public class ChatMessagesController : Controller
+    [Route("tgChatMessages")]
+    public class TelegramChatMessagesController : Controller
     {
         private readonly ITelegramBotClient client;
         private readonly IMessagesProcessor messagesProcessor;
 
-        public ChatMessagesController(
+        public TelegramChatMessagesController(
             ITelegramBotClient client,
             IMessagesProcessor messagesProcessor)
         {
@@ -29,9 +29,11 @@ namespace MatchAssistant.Web.Controllers
             if (message == null || message.Type != MessageType.Text)
                 return;
 
-            var response = messagesProcessor.ProcessMessage(message.ToChatMessage());
+            var chatMessage = message.ToChatMessage();
 
-            var formattedResponse = TelegramCommandResponseFormatter.FormatCommandResponse(message.ToChatMessage(), response);
+            var response = messagesProcessor.ProcessMessage(chatMessage);
+
+            var formattedResponse = TelegramCommandResponseFormatter.FormatCommandResponse(chatMessage, response);
 
             if (!string.IsNullOrEmpty(formattedResponse))
             {

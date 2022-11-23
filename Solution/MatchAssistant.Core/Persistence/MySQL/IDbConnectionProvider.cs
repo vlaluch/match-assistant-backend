@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace MatchAssistant.Core.Persistence.Interfaces
+namespace MatchAssistant.Core.Persistence.MySQL
 {
     public interface IDbConnectionProvider
     {

@@ -4,7 +4,7 @@ using System;
 
 namespace MatchAssistant.Web.Infrastructure
 {
-    public class ConfigurationSettingsProvider : IDbConnectionStringProvider, IBotSettingsProvider
+    public class ConfigurationSettingsProvider : IDbConnectionStringProvider
     {
         public string ConnectionString => Environment.GetEnvironmentVariable("DefaultConnection");
 

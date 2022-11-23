@@ -1,7 +1,7 @@
 using MatchAssistant.Core.Entities;
 using Telegram.Bot.Types;
 
-namespace MatchAssistant.Web.Infrastructure
+namespace MatchAssistant.Core.MessagingGateways.Telegram
 {
     public static class TelegramMessagesConverter
     {

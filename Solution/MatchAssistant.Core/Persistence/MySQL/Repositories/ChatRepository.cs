@@ -3,7 +3,7 @@ using MatchAssistant.Core.Entities;
 using MatchAssistant.Core.Persistence.Interfaces;
 using System;
 
-namespace MatchAssistant.Core.Persistence.DataMappers
+namespace MatchAssistant.Core.Persistence.MySQL.Repositories
 {
     public class ChatRepository : IChatRepository
     {

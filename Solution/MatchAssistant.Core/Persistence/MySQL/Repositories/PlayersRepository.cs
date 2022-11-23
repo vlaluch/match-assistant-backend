@@ -1,11 +1,10 @@
 ﻿using Dapper;
 using MatchAssistant.Core.DataLayer.Interfaces;
 using MatchAssistant.Core.Entities;
-using MatchAssistant.Core.Persistence.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MatchAssistant.Core.Persistence.DataMappers
+namespace MatchAssistant.Core.Persistence.MySQL.Repositories
 {
     public class PlayersRepository : IPlayersRepository
     {

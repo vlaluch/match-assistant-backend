@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MatchAssistant.Core.Persistence.DataMappers
+namespace MatchAssistant.Core.Persistence.MySQL.Repositories
 {
     public class ParticipantRepository : IParticipantRepository
     {
@@ -72,7 +72,7 @@ VALUES (@GameId, @Name, @StateId, @Count)";
 
         public void UpdateParticipant(int gameId, ParticipantsGroup participantsGroup)
         {
-            if(participantsGroup == null)
+            if (participantsGroup == null)
             {
                 throw new ArgumentException($"{nameof(participantsGroup)} is null");
             }

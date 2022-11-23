@@ -1,12 +1,10 @@
-using MatchAssistant.ConsoleApplication.Interfaces;
-using MatchAssistant.Core.BusinessLogic.Interfaces;
 using MatchAssistant.Core.Persistence.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 
 namespace MatchAssistant.ConsoleApplication
 {
-    public class ApplicationSettingsManager : IDbConnectionStringProvider, IBotSettingsProvider, IProxySettingsProvider
+    public class ApplicationSettingsManager : IDbConnectionStringProvider
     {
         private static IConfiguration _configuration;
 
@@ -27,11 +25,11 @@ namespace MatchAssistant.ConsoleApplication
             }
         }
 
-        public string Token => Configuration["token"];
+        public static string Token => Configuration["token"];
 
-        public string ProxyAddress => Configuration["proxySettings:address"];
+        public static string ProxyAddress => Configuration["proxySettings:address"];
 
-        public string ProxyPort => Configuration["proxySettings:port"];
+        public static string ProxyPort => Configuration["proxySettings:port"];
 
         public string ConnectionString => Configuration.GetConnectionString("DefaultConnection");
     }

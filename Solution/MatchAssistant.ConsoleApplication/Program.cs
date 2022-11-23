@@ -1,30 +1,41 @@
-﻿using MatchAssistant.ConsoleApplication.Interfaces;
-using MatchAssistant.Core;
-using MatchAssistant.Core.Entities;
+﻿using MatchAssistant.Core;
+using MatchAssistant.Core.BusinessLogic.Interfaces;
+using MatchAssistant.Core.MessagingGateways.Telegram;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Net;
+using System.Net.Http;
+using Telegram.Bot;
+using Telegram.Bot.Args;
+using Telegram.Bot.Types.Enums;
 
 namespace MatchAssistant.ConsoleApplication
 {
     public static class Program
     {
-        private static IBotClient bot;
+        private static IMessagesProcessor messagesProcessor;
+        private static ITelegramBotClient client;
         private static ServiceProvider serviceProvider;
 
         public static void Main()
         {
             ConfigureApp();
 
-            bot = serviceProvider.GetService<IBotClient>();
+            messagesProcessor = serviceProvider.GetService<IMessagesProcessor>();
 
-            bot.OnMessageReceived += BotOnMessageReceived;
-            bot.OnErrorOccured += BotOnErrorOccured;
+            client = new TelegramBotClient(
+                ApplicationSettingsManager.Token,
+                CreateClient()
+            );
 
-            bot.Run();
+            client.OnMessage += ClientOnMessageReceived;
+            client.OnReceiveError += ClientOnReceiveError;
+
+            client.StartReceiving(Array.Empty<UpdateType>());
             WriteMessage("started");
 
             Console.ReadLine();
-            bot.Stop();
+            client.StopReceiving();
             WriteMessage("stopped");
         }
 
@@ -37,14 +48,56 @@ namespace MatchAssistant.ConsoleApplication
             serviceProvider = services.BuildServiceProvider();
         }
 
-        private static void BotOnMessageReceived(ChatMessage message)
+        private static void ClientOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
-            WriteMessage($"message received from {message.Chat.Name}");
+            var message = messageEventArgs.Message;
+
+            if (message == null || message.Type != MessageType.Text)
+            {
+                return;
+            }
+
+            var chatMessage = message.ToChatMessage();
+
+            WriteMessage($"message received from {chatMessage.Chat.Name}");
+
+            try
+            {
+                var response = messagesProcessor.ProcessMessage(chatMessage);
+                var formattedResponse = TelegramCommandResponseFormatter.FormatCommandResponse(chatMessage, response);
+
+                if (!string.IsNullOrEmpty(formattedResponse))
+                {
+                    client.SendTextMessageAsync(message.Chat.Id, formattedResponse, ParseMode.Markdown);
+                }
+            }
+            catch (Exception e)
+            {
+                HandleError(e);
+            }
         }
 
-        private static void BotOnErrorOccured(string errorMessage)
+        private static HttpClient CreateClient()
         {
-            WriteMessage("oops, error occured");
+            var proxy = new WebProxy($"http://{ApplicationSettingsManager.ProxyAddress}:{ApplicationSettingsManager.ProxyPort}", false, Array.Empty<string>());
+
+            var httpClientHandler = new HttpClientHandler()
+            {
+                Proxy = proxy,
+                UseProxy = true
+            };
+
+            return new HttpClient(handler: httpClientHandler, disposeHandler: true);
+        }
+
+        private static void ClientOnReceiveError(object sender, ReceiveErrorEventArgs errorEventArgs)
+        {
+            HandleError(errorEventArgs.ApiRequestException);
+        }
+
+        private static void HandleError(Exception exception)
+        {
+            Console.WriteLine($"{DateTime.Now:yyyy.MM.dd HH:mm} Error! {exception.Message}");
         }
 
         private static void WriteMessage(string message)

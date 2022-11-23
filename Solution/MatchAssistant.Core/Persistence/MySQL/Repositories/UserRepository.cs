@@ -4,7 +4,7 @@ using MatchAssistant.Core.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
 
-namespace MatchAssistant.Core.Persistence.DataMappers
+namespace MatchAssistant.Core.Persistence.MySQL.Repositories
 {
     public class UserRepository : IUserRepository
     {

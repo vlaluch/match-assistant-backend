@@ -2,9 +2,9 @@
 using MatchAssistant.Core.BusinessLogic.Handlers;
 using MatchAssistant.Core.BusinessLogic.Interfaces;
 using MatchAssistant.Core.DataLayer.Interfaces;
-using MatchAssistant.Core.Persistence;
-using MatchAssistant.Core.Persistence.DataMappers;
 using MatchAssistant.Core.Persistence.Interfaces;
+using MatchAssistant.Core.Persistence.MySQL;
+using MatchAssistant.Core.Persistence.MySQL.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MatchAssistant.Core

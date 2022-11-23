@@ -3,15 +3,33 @@ using MatchAssistant.Core.Persistence.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MatchAssistant.Core.Tests.Infrastructure.Mappers
+namespace MatchAssistant.Core.Persistence.Disk
 {
-    public class InMemoryParticipantMapper : IParticipantRepository
+    public class DiskParticipantRepository : IParticipantRepository
     {
-        private readonly Dictionary<int, List<ParticipantsGroup>> participants;
+        private Dictionary<int, List<ParticipantsGroup>> participants;
+        private readonly JsonStorage<Dictionary<int, List<ParticipantsGroup>>> storage;
 
-        public InMemoryParticipantMapper()
+        public DiskParticipantRepository()
         {
             participants = new Dictionary<int, List<ParticipantsGroup>>();
+        }
+
+        public DiskParticipantRepository(JsonStorage<Dictionary<int, List<ParticipantsGroup>>> storage)
+        {
+            this.storage = storage;
+
+            participants = new Dictionary<int, List<ParticipantsGroup>>();
+
+            var storedParticipants = storage.Load();
+
+            if (storedParticipants != null)
+            {
+                foreach(var participantInfo in storedParticipants)
+                {
+                    participants.Add(participantInfo.Key, participantInfo.Value);
+                }
+            }
         }
 
         public void AddParticipant(int gameId, ParticipantsGroup participantsGroup)
@@ -24,6 +42,8 @@ namespace MatchAssistant.Core.Tests.Infrastructure.Mappers
             {
                 participants[gameId].Add(participantsGroup);
             }
+
+            storage.Save(participants);
         }
 
         public IEnumerable<ParticipantsGroup> GetAllParticipants(int gameId)
@@ -55,6 +75,8 @@ namespace MatchAssistant.Core.Tests.Infrastructure.Mappers
         {
             var participant = participants[gameId].FirstOrDefault(x => x.Name == participantsGroup.Name);
             participant = participantsGroup;
+
+            storage.Save(participants);
         }
     }
 }
