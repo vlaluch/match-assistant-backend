@@ -1,5 +1,8 @@
 ﻿using MatchAssistant.Domain.Core.Entities;
 using MatchAssistant.Domain.Core.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Ydb.Sdk.Table;
 using Ydb.Sdk.Value;
 
@@ -16,7 +19,8 @@ namespace MatchAssistant.Persistence.Repositories.Ydb.Repositories
 
         public async Task AddGameAsync(Game game)
         {
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {
@@ -44,7 +48,8 @@ UPSERT INTO games (title, date) VALUES ($title, $date);";
 
         public async Task<Game> FindGameByTitleAndDateAsync(string title, DateTime date)
         {
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {
@@ -84,7 +89,8 @@ SELECT * FROM games WHERE title = $title AND date = $date;
 
         public async Task<Game> GetLatestGameByTitleAsync(string title)
         {
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {

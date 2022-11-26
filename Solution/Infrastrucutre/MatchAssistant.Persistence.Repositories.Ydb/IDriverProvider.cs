@@ -1,9 +1,10 @@
-﻿using Ydb.Sdk;
+﻿using System.Threading.Tasks;
+using Ydb.Sdk;
 
 namespace MatchAssistant.Persistence.Repositories.Ydb
 {
     public interface IDriverProvider
     {
-        Driver Driver { get; }
+        Task<Driver> GetDriverAsync();
     }
 }

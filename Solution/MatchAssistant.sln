@@ -19,15 +19,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.Persistence.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.Persistence.Repositories.Ydb", "Infrastrucutre\MatchAssistant.Persistence.Repositories.Ydb\MatchAssistant.Persistence.Repositories.Ydb.csproj", "{C9393295-2386-4E44-9A9A-8C1C2A3AF3D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchAssistant.Domain.Core", "Domain\MatchAssistant.Domain.Core\MatchAssistant.Domain.Core.csproj", "{C4F03EA5-B850-4803-ACB2-1F2D94154409}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.Domain.Core", "Domain\MatchAssistant.Domain.Core\MatchAssistant.Domain.Core.csproj", "{C4F03EA5-B850-4803-ACB2-1F2D94154409}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchAssistant.Messaging.Telegram", "Infrastrucutre\MatchAssistant.Messaging.Telegram\MatchAssistant.Messaging.Telegram.csproj", "{BEBD00B5-7AF5-4A80-B8AB-B1B74483CC76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.Messaging.Telegram", "Infrastrucutre\MatchAssistant.Messaging.Telegram\MatchAssistant.Messaging.Telegram.csproj", "{BEBD00B5-7AF5-4A80-B8AB-B1B74483CC76}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{60F21E2A-6093-4735-9D89-1E87613ED69C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchAssistant.ConsoleApplication", "Applications\MatchAssistant.ConsoleApplication\MatchAssistant.ConsoleApplication.csproj", "{54486BB9-9E3E-4CCA-9A61-60B9633630BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.ConsoleApplication", "Applications\MatchAssistant.ConsoleApplication\MatchAssistant.ConsoleApplication.csproj", "{54486BB9-9E3E-4CCA-9A61-60B9633630BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchAssistant.Web", "Applications\MatchAssistant.Web\MatchAssistant.Web.csproj", "{FE7AB4B3-6062-4956-AF03-5CA480C99DF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.Web", "Applications\MatchAssistant.Web\MatchAssistant.Web.csproj", "{FE7AB4B3-6062-4956-AF03-5CA480C99DF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchAssistant.YcFunction.Telegram", "Applications\MatchAssistant.YcFunction.Telegram\MatchAssistant.YcFunction.Telegram.csproj", "{7ED4A5B6-0E52-4443-A320-71EA39E6DE18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{FE7AB4B3-6062-4956-AF03-5CA480C99DF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE7AB4B3-6062-4956-AF03-5CA480C99DF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE7AB4B3-6062-4956-AF03-5CA480C99DF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ED4A5B6-0E52-4443-A320-71EA39E6DE18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ED4A5B6-0E52-4443-A320-71EA39E6DE18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ED4A5B6-0E52-4443-A320-71EA39E6DE18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ED4A5B6-0E52-4443-A320-71EA39E6DE18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{BEBD00B5-7AF5-4A80-B8AB-B1B74483CC76} = {C4A6DCD1-5A31-4B1F-ACB4-8C12642E3C36}
 		{54486BB9-9E3E-4CCA-9A61-60B9633630BE} = {60F21E2A-6093-4735-9D89-1E87613ED69C}
 		{FE7AB4B3-6062-4956-AF03-5CA480C99DF1} = {60F21E2A-6093-4735-9D89-1E87613ED69C}
+		{7ED4A5B6-0E52-4443-A320-71EA39E6DE18} = {60F21E2A-6093-4735-9D89-1E87613ED69C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D646565E-51F6-40BB-9EF0-94C32839D532}

@@ -28,7 +28,7 @@ namespace MatchAssistant.Domain.Handlers
 
         private async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsForGameAsync(string gameTitle)
         {
-            var game = gameRepository.GetLatestGameByTitleAsync(gameTitle);
+            var game = await gameRepository.GetLatestGameByTitleAsync(gameTitle);
 
             if (game == null)
             {

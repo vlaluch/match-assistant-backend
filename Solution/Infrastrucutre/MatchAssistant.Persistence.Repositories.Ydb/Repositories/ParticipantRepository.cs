@@ -1,11 +1,15 @@
 ﻿using MatchAssistant.Domain.Core.Entities;
 using MatchAssistant.Domain.Core.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Ydb.Sdk.Table;
 using Ydb.Sdk.Value;
 
 namespace MatchAssistant.Persistence.Repositories.Ydb.Repositories
 {
-    internal class ParticipantRepository : IParticipantRepository
+    public class ParticipantRepository : IParticipantRepository
     {
         private readonly IDriverProvider driverProvider;
 
@@ -16,7 +20,8 @@ namespace MatchAssistant.Persistence.Repositories.Ydb.Repositories
 
         public async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(int gameId)
         {
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {
@@ -49,7 +54,8 @@ SELECT * FROM game_participants WHERE game_id = $game_id;";
 
         public async Task<ParticipantsGroup> GetParticipantByNameAsync(int gameId, string participantName)
         {
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {
@@ -95,7 +101,8 @@ SELECT * FROM game_participants WHERE game_id = $game_id and name = $name;";
                 return Enumerable.Empty<ParticipantsGroup>();
             }
 
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {
@@ -142,7 +149,8 @@ WHERE state.name = 'Accepted' AND game.title = $title AND game.id IN $game_ids;"
                 throw new ArgumentException($"{nameof(participantsGroup)} is null");
             }
 
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {
@@ -180,7 +188,8 @@ VALUES ($game_id, $name, $state_id, $count);";
                 throw new ArgumentException($"{nameof(participantsGroup)} is null");
             }
 
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {
@@ -214,7 +223,8 @@ WHERE game_id = $game_id AND name = $name;";
 
         private async Task<IEnumerable<int>> GetRecentGamesIds(string gameTitle, int latestGameId, int recentGamesLimit)
         {
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {

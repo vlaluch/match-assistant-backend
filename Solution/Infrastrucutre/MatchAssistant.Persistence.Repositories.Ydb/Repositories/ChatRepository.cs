@@ -1,11 +1,14 @@
 ﻿using MatchAssistant.Domain.Core.Entities;
 using MatchAssistant.Domain.Core.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Ydb.Sdk.Table;
 using Ydb.Sdk.Value;
 
 namespace MatchAssistant.Persistence.Repositories.Ydb.Repositories
 {
-    internal class ChatRepository : IChatRepository
+    public class ChatRepository : IChatRepository
     {
         private readonly IDriverProvider driverProvider;
 
@@ -21,7 +24,8 @@ namespace MatchAssistant.Persistence.Repositories.Ydb.Repositories
                 throw new ArgumentException($"{nameof(chat)} is null");
             }
 
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {
@@ -49,7 +53,8 @@ UPSERT INTO chats (id, name) VALUES ($id, $name);";
 
         public async Task<GameChat> GetChatByNameAsync(string name)
         {
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {

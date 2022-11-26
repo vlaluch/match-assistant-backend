@@ -1,5 +1,9 @@
 ﻿using MatchAssistant.Domain.Core.Entities;
 using MatchAssistant.Domain.Core.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Ydb.Sdk.Table;
 using Ydb.Sdk.Value;
 
@@ -21,7 +25,8 @@ namespace MatchAssistant.Persistence.Repositories.Ydb.Repositories
                 throw new ArgumentException($"{nameof(user)} is null");
             }
 
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {
@@ -51,7 +56,8 @@ UPSERT INTO users (id, name, user_name) VALUES ($id, $name, $user_name);";
 
         public async Task AddToChatAsync(long chatId, int userId)
         {
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {
@@ -79,7 +85,8 @@ UPSERT INTO users_chats (user_id, chat_id) VALUES ($user_id, $chat_id);";
 
         public async Task<IEnumerable<ChatUser>> GetChatUsersAsync(long chatId)
         {
-            using var tableClient = new TableClient(driverProvider.Driver, new TableClientConfig());
+            using var driver = await driverProvider.GetDriverAsync();
+            using var tableClient = new TableClient(driver, new TableClientConfig());
 
             var response = await tableClient.SessionExec(async session =>
             {
@@ -118,6 +125,6 @@ WHERE user_chat.chat_id = @$chat_id;";
                 Name = (string)row["name"],
                 UserName = (string)row["user_name"]
             });
-        }
+        }        
     }
 }
