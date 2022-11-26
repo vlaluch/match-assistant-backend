@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.IO;
 
 namespace MatchAssistant.Persistence.Repositories.JsonFiles
 {
