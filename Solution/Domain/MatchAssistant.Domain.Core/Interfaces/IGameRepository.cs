@@ -1,8 +1,8 @@
-﻿using MatchAssistant.Domain.Core.Entities;
+﻿using MatchAssistant.Domain.Contracts.Entities;
 using System;
 using System.Threading.Tasks;
 
-namespace MatchAssistant.Domain.Core.Interfaces
+namespace MatchAssistant.Domain.Contracts.Interfaces
 {
     public interface IGameRepository
     {

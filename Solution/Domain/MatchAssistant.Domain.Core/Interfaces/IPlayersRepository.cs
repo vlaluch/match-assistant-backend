@@ -1,7 +1,7 @@
-﻿using MatchAssistant.Domain.Core.Entities;
+﻿using MatchAssistant.Domain.Contracts.Entities;
 using System.Collections.Generic;
 
-namespace MatchAssistant.Domain.Core.Interfaces
+namespace MatchAssistant.Domain.Contracts.Interfaces
 {
     public interface IPlayersRepository
     {

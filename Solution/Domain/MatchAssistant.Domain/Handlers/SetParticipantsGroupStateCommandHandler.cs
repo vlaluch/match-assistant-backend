@@ -1,5 +1,5 @@
-﻿using MatchAssistant.Domain.Core.Entities;
-using MatchAssistant.Domain.Core.Interfaces;
+﻿using MatchAssistant.Domain.Contracts.Entities;
+using MatchAssistant.Domain.Contracts.Interfaces;
 using MatchAssistant.Domain.Interfaces;
 using System;
 using System.Collections.Generic;

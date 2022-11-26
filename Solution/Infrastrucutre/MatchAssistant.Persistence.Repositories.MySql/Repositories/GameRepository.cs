@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using MatchAssistant.Domain.Core.Entities;
-using MatchAssistant.Domain.Core.Interfaces;
+using MatchAssistant.Domain.Contracts.Entities;
+using MatchAssistant.Domain.Contracts.Interfaces;
 
 namespace MatchAssistant.Persistence.Repositories.MySql.Repositories
 {

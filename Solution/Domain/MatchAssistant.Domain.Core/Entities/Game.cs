@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MatchAssistant.Domain.Core.Entities
+namespace MatchAssistant.Domain.Contracts.Entities
 {
     public class Game
     {

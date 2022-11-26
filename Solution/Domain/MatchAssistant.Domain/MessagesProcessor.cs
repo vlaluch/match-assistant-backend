@@ -1,4 +1,4 @@
-using MatchAssistant.Domain.Core.Entities;
+using MatchAssistant.Domain.Contracts.Entities;
 using MatchAssistant.Domain.Interfaces;
 using System;
 using System.Collections.Generic;

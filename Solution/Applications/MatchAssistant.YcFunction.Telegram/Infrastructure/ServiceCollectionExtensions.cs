@@ -1,5 +1,5 @@
 ﻿using MatchAssistant.Domain;
-using MatchAssistant.Domain.Core.Interfaces;
+using MatchAssistant.Domain.Contracts.Interfaces;
 using MatchAssistant.Domain.Handlers;
 using MatchAssistant.Domain.Interfaces;
 using MatchAssistant.Persistence.Repositories.Ydb;

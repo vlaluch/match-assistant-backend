@@ -1,4 +1,4 @@
-﻿using MatchAssistant.Domain.Core.Entities;
+﻿using MatchAssistant.Domain.Contracts.Entities;
 using System.Threading.Tasks;
 
 namespace MatchAssistant.Domain.Interfaces

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MatchAssistant.Domain.Core.Entities
+namespace MatchAssistant.Domain.Contracts.Entities
 {
     public enum TeamGenerationAlgorithm
     {

@@ -1,4 +1,4 @@
-using MatchAssistant.Domain.Core.Entities;
+using MatchAssistant.Domain.Contracts.Entities;
 using Telegram.Bot.Types;
 
 namespace MatchAssistant.Messaging.Telegram

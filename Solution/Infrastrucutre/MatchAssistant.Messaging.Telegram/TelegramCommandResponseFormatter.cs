@@ -1,5 +1,5 @@
 ﻿using MatchAssistant.Domain;
-using MatchAssistant.Domain.Core.Entities;
+using MatchAssistant.Domain.Contracts.Entities;
 using System.Collections.Generic;
 using System.Linq;
 
