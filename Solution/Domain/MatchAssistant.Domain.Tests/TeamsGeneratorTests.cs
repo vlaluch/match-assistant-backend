@@ -1,20 +1,17 @@
-using MatchAssistant.Core.BusinessLogic;
-using MatchAssistant.Core.Entities;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
+using MatchAssistant.Domain;
+using MatchAssistant.Domain.Contracts.Entities;
 
 namespace MatchAssistant.Core.Tests
 {
     [TestClass]
     public class TeamsGeneratorTests
     {
-        private TeamsGenerator _target;
+        private TeamsGenerator target;
 
         [TestInitialize]
         public void Init()
         {
-            _target = new TeamsGenerator();
+            target = new TeamsGenerator();
         }
 
         [TestMethod]
@@ -24,7 +21,7 @@ namespace MatchAssistant.Core.Tests
             players.AddRange(GenerateGoalKeepers(3, 1));
             players.AddRange(GenerateFieldPlayers(15, 4));
 
-            var teams = _target.Generate(players, TeamGenerationAlgorithm.Snake).ToArray();
+            var teams = target.Generate(players, TeamGenerationAlgorithm.Snake).ToArray();
 
             Assert.AreEqual(3, teams.Length);
             Assert.IsTrue(teams.All(team => HasKeeper(team)));
@@ -37,7 +34,7 @@ namespace MatchAssistant.Core.Tests
             var players = new List<Player>();
             players.AddRange(GenerateGoalKeepers(3, 1));
             players.AddRange(GenerateFieldPlayers(15, 4));
-            var teams = _target.Generate(players, TeamGenerationAlgorithm.Baskets).ToArray();
+            var teams = target.Generate(players, TeamGenerationAlgorithm.Baskets).ToArray();
 
             Assert.AreEqual(3, teams.Length);
             Assert.IsTrue(teams.All(team => HasKeeper(team)));

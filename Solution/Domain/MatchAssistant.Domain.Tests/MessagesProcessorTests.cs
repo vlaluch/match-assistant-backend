@@ -1,8 +1,9 @@
-﻿using MatchAssistant.Core.BusinessLogic;
-using MatchAssistant.Core.Entities;
-using MatchAssistant.Core.Persistence.InMemory;
-    
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MatchAssistant.Domain;
+using MatchAssistant.Domain.Contracts.Entities;
+using MatchAssistant.Domain.Handlers;
+using MatchAssistant.Domain.Interfaces;
+using MatchAssistant.Messaging.Telegram;
+using MatchAssistant.Persistence.Repositories.InMemory;
 
 namespace MatchAssistant.Core.Tests
 {
@@ -14,16 +15,18 @@ namespace MatchAssistant.Core.Tests
         [TestInitialize]
         public void Init()
         {
-            var participantsService = new ParticipantsService(
-                    new InMemoryGameRepository(),
-                    new InMemoryParticipantRepository());
+            var participantRepository = new InMemoryParticipantRepository();
+            var gameRepository = new InMemoryGameRepository();
 
-            var chatsService = new ChatsService(
-                new InMemoryChatMapper(),
-                new InMemoryUserRepository()
-                );
+            var handlers = new List<IHandleCommand>
+            {
+                new GetParticipantsCountCommandHandler(participantRepository, gameRepository),
+                new GetParticipantsListCommandHandler(participantRepository, gameRepository),
+                new NewGameCommandHandler(gameRepository),
+                new SetParticipantsGroupStateCommandHandler(gameRepository, participantRepository)
+            };
 
-            target = new MessagesProcessor(participantsService, chatsService);
+            target = new MessagesProcessor(handlers);
         }
 
         #region Count
@@ -31,154 +34,154 @@ namespace MatchAssistant.Core.Tests
         #region Add
 
         [TestMethod]
-        public void SinglePlusIncrementsCount()
+        public async Task SinglePlusIncrementsCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("1", countResponse);
         }
 
         [TestMethod]
-        public void PlusWithCountAddsCount()
+        public async Task PlusWithCountAddsCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("2", countResponse);
         }
 
         [TestMethod]
-        public void PlusWithCountWithoutNameAddsCount()
+        public async Task PlusWithCountWithoutNameAddsCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("2", countResponse);
         }
 
         [TestMethod]
-        public void PlusWithNameIncrementsCount()
+        public async Task PlusWithNameIncrementsCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ Вася");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("1", countResponse);
         }
 
-        public void DuplicatePlusWithNameIncrementsCount()
+        public async Task DuplicatePlusWithNameIncrementsCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ Вася");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+ Вася");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("2", countResponse);
         }
 
         [TestMethod]
-        public void DuplicatedSinglePlusIsIgnored()
+        public async Task DuplicatedSinglePlusIsIgnored()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("1", countResponse);
         }
 
         [TestMethod]
-        public void PlusOneIncrementsCount()
+        public async Task PlusOneIncrementsCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("2", countResponse);
         }
 
         [TestMethod]
-        public void DuplicatePlusOneIncrementsCount()
+        public async Task DuplicatePlusOneIncrementsCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("2", countResponse);
         }
 
         [TestMethod]
-        public void PlusNumberIncrementsCount()
+        public async Task PlusNumberIncrementsCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+3");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("5", countResponse);
         }
 
         [TestMethod]
-        public void PlusWithCountCanAddCountSeveralTimes()
+        public async Task PlusWithCountCanAddCountSeveralTimes()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("4", countResponse);
         }
 
         [TestMethod]
-        public void PlusWithCountWithoutNameCanAddCountSeveralTimes()
+        public async Task PlusWithCountWithoutNameCanAddCountSeveralTimes()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("4", countResponse);
         }
 
@@ -187,190 +190,190 @@ namespace MatchAssistant.Core.Tests
         #region Remove
 
         [TestMethod]
-        public void SingleMinusDecrementsCount()
+        public async Task SingleMinusDecrementsCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("0", countResponse);
         }
 
         [TestMethod]
-        public void MinusWithCountRemovesCount()
+        public async Task MinusWithCountRemovesCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "- 2 из вк");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("0", countResponse);
         }
 
         [TestMethod]
-        public void MinusWithCountWithoutNameRemovesCount()
+        public async Task MinusWithCountWithoutNameRemovesCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-2");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("0", countResponse);
         }
 
         [TestMethod]
-        public void MinusWithNameDecrementsCount()
+        public async Task MinusWithNameDecrementsCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ Вася");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "- Вася");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("0", countResponse);
         }
 
         [TestMethod]
-        public void DuplicatedSingleMinusIsIgnored()
+        public async Task DuplicatedSingleMinusIsIgnored()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
             var message3 = CreateTextMessageFromUser(1, "Bob", "-");
-            target.ProcessMessageAsync(message3);
+            await target.ProcessMessageAsync(message3);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("0", countResponse);
         }
 
         [TestMethod]
-        public void MinusWithCountCanRemoveCountSeveralTimes()
+        public async Task MinusWithCountCanRemoveCountSeveralTimes()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 6 из вк");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "- 2 из вк");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
             var message3 = CreateTextMessageFromUser(1, "Bob", "- 2 из вк");
-            target.ProcessMessageAsync(message3);
+            await target.ProcessMessageAsync(message3);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("2", countResponse);
         }
 
         [TestMethod]
-        public void MinusWithCountWithoutNameCanRemoveCountSeveralTimes()
+        public async Task MinusWithCountWithoutNameCanRemoveCountSeveralTimes()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+6");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-2");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
             var message3 = CreateTextMessageFromUser(1, "Bob", "-2");
-            target.ProcessMessageAsync(message3);
+            await target.ProcessMessageAsync(message3);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("2", countResponse);
         }
 
         [TestMethod]
-        public void MinusWithBiggerCountWithoutNameRemovesOnlyExistingCount()
+        public async Task MinusWithBiggerCountWithoutNameRemovesOnlyExistingCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-4");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("0", countResponse);
         }
 
         [TestMethod]
-        public void MinusWithBiggerCountRemovesOnlyExistingCount()
+        public async Task MinusWithBiggerCountRemovesOnlyExistingCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "- 4 из вк");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("0", countResponse);
         }
 
         #endregion
 
         [TestMethod]
-        public void ShouldRestoreCorrectStateForPlusOne()
+        public async Task ShouldRestoreCorrectStateForPlusOne()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
             var message3 = CreateTextMessageFromUser(1, "Bob", "-2");
-            target.ProcessMessageAsync(message3);
+            await target.ProcessMessageAsync(message3);
 
             var message4 = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessageAsync(message4);
+            await target.ProcessMessageAsync(message4);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("1", countResponse);
         }
 
         [TestMethod]
-        public void ShouldRestoreCorrectStateForPlusNumber()
+        public async Task ShouldRestoreCorrectStateForPlusNumber()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+1");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
             var message3 = CreateTextMessageFromUser(1, "Bob", "-2");
-            target.ProcessMessageAsync(message3);
+            await target.ProcessMessageAsync(message3);
 
             var message4 = CreateTextMessageFromUser(1, "Bob", "+2");
-            target.ProcessMessageAsync(message4);
+            await target.ProcessMessageAsync(message4);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("2", countResponse);
         }
 
@@ -382,26 +385,26 @@ namespace MatchAssistant.Core.Tests
 
 
         [TestMethod]
-        public void PlusWithCountUpdatesListWithCorrectWeightAndName()
+        public async Task PlusWithCountUpdatesListWithCorrectWeightAndName()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ 2 из вк");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var listResponse = GetListCommandResult();
+            var listResponse = await GetListCommandResultAsync();
             Assert.AreEqual("1-2. из вк - 2\r\n", listResponse);
         }
 
         [TestMethod]
-        public void PlusWithNameUpdatesListWithWholeName()
+        public async Task PlusWithNameUpdatesListWithWholeName()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+ Иван Иванов");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var listResponse = GetListCommandResult();
+            var listResponse = await GetListCommandResultAsync();
             Assert.AreEqual("1. Иван Иванов\r\n", listResponse);
         }
 
@@ -412,119 +415,119 @@ namespace MatchAssistant.Core.Tests
         #region Not sure
 
         [TestMethod]
-        public void PlusAndMinusIncrementsNotSureCount()
+        public async Task PlusAndMinusIncrementsNotSureCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+-");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("1±", countResponse);
         }
 
         [TestMethod]
-        public void PlusAndSlashAndMinusIncrementsNotSureCount()
+        public async Task PlusAndSlashAndMinusIncrementsNotSureCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/-");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("1±", countResponse);
         }
 
         [TestMethod]
-        public void PlusAndBackslashAndMinusIncrementsNotSureCount()
+        public async Task PlusAndBackslashAndMinusIncrementsNotSureCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+\\-");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("1±", countResponse);
         }
 
         [TestMethod]
-        public void PlusAndMinusAsSingleSymbolIncrementsNotSureCount()
+        public async Task PlusAndMinusAsSingleSymbolIncrementsNotSureCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "±");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("1±", countResponse);
         }
 
         [TestMethod]
-        public void PlusAndMinusWithCountAddsNotSuredWithCount()
+        public async Task PlusAndMinusWithCountAddsNotSuredWithCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/- 2 из вк");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("2±", countResponse);
         }
 
         [TestMethod]
-        public void PlusAndMinusWithNameIncrementsNotSureCount()
+        public async Task PlusAndMinusWithNameIncrementsNotSureCount()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/- Вася");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("1±", countResponse);
         }
 
         [TestMethod]
-        public void PlusAndNotSureAreBothShown()
+        public async Task PlusAndNotSureAreBothShown()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/-");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(2, "Jack", "+");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("1 и 1±", countResponse);
         }
 
         [TestMethod]
-        public void UpdateOfSureStateWithTrueIncrementsCountOfSure()
+        public async Task UpdateOfSureStateWithTrueIncrementsCountOfSure()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/-");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "+");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("1", countResponse);
         }
 
         [TestMethod]
-        public void UpdateOfSureStateWithFalseDosntIncrementCountOfSure()
+        public async Task UpdateOfSureStateWithFalseDosntIncrementCountOfSure()
         {
-            CreateNewGame();
+            await CreateNewGameAsync();
 
             var message = CreateTextMessageFromUser(1, "Bob", "+/-");
-            target.ProcessMessageAsync(message);
+            await target.ProcessMessageAsync(message);
 
             var message2 = CreateTextMessageFromUser(1, "Bob", "-");
-            target.ProcessMessageAsync(message2);
+            await target.ProcessMessageAsync(message2);
 
-            var countResponse = GetCountCommandResult();
+            var countResponse = await GetCountCommandResultAsync();
             Assert.AreEqual("0", countResponse);
         }
 
@@ -544,7 +547,7 @@ namespace MatchAssistant.Core.Tests
             return message;
         }
 
-        private string CreateNewGame()
+        private async Task<string> CreateNewGameAsync()
         {
             var newGameCommand = new ChatMessage
             {
@@ -553,10 +556,11 @@ namespace MatchAssistant.Core.Tests
                 Text = "/new"
             };
 
-            return target.ProcessMessageAsync(newGameCommand);
+            var response = await target.ProcessMessageAsync(newGameCommand);
+            return TelegramCommandResponseFormatter.FormatCommandResponse(newGameCommand, response);
         }
 
-        private string GetCountCommandResult()
+        private async Task<string> GetCountCommandResultAsync()
         {
             var countCommand = new ChatMessage
             {
@@ -565,10 +569,11 @@ namespace MatchAssistant.Core.Tests
                 Text = "/count"
             };
 
-            return target.ProcessMessageAsync(countCommand);
+            var response = await target.ProcessMessageAsync(countCommand);
+            return TelegramCommandResponseFormatter.FormatCommandResponse(countCommand, response);
         }
 
-        private string GetListCommandResult()
+        private async Task<string> GetListCommandResultAsync()
         {
             var listCommand = new ChatMessage
             {
@@ -577,7 +582,8 @@ namespace MatchAssistant.Core.Tests
                 Text = "/list"
             };
 
-            return target.ProcessMessageAsync(listCommand);
+            var response = await target.ProcessMessageAsync(listCommand);
+            return TelegramCommandResponseFormatter.FormatCommandResponse(listCommand, response);
         }
 
         #endregion

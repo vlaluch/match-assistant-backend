@@ -16,6 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Infrastrucutre\MatchAssistant.Messaging.Telegram\MatchAssistant.Messaging.Telegram.csproj" />
+    <ProjectReference Include="..\..\Infrastrucutre\MatchAssistant.Persistence.Repositories.InMemory\MatchAssistant.Persistence.Repositories.InMemory.csproj" />
     <ProjectReference Include="..\MatchAssistant.Domain\MatchAssistant.Domain.csproj" />
   </ItemGroup>
 
