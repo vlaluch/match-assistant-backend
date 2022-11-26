@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Domain\MatchAssistant.Domain.Core\MatchAssistant.Domain.Core.csproj" />
+    <ProjectReference Include="..\..\Domain\MatchAssistant.Domain.Contracts\MatchAssistant.Domain.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

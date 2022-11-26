@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.Persistence.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.Persistence.Repositories.Ydb", "Infrastrucutre\MatchAssistant.Persistence.Repositories.Ydb\MatchAssistant.Persistence.Repositories.Ydb.csproj", "{C9393295-2386-4E44-9A9A-8C1C2A3AF3D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.Domain.Core", "Domain\MatchAssistant.Domain.Core\MatchAssistant.Domain.Core.csproj", "{C4F03EA5-B850-4803-ACB2-1F2D94154409}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.Domain.Contracts", "Domain\MatchAssistant.Domain.Contracts\MatchAssistant.Domain.Contracts.csproj", "{C4F03EA5-B850-4803-ACB2-1F2D94154409}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.Messaging.Telegram", "Infrastrucutre\MatchAssistant.Messaging.Telegram\MatchAssistant.Messaging.Telegram.csproj", "{BEBD00B5-7AF5-4A80-B8AB-B1B74483CC76}"
 EndProject
@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.ConsoleAppli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.Web", "Applications\MatchAssistant.Web\MatchAssistant.Web.csproj", "{FE7AB4B3-6062-4956-AF03-5CA480C99DF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchAssistant.YcFunction.Telegram", "Applications\MatchAssistant.YcFunction.Telegram\MatchAssistant.YcFunction.Telegram.csproj", "{7ED4A5B6-0E52-4443-A320-71EA39E6DE18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchAssistant.YcFunction.Telegram", "Applications\MatchAssistant.YcFunction.Telegram\MatchAssistant.YcFunction.Telegram.csproj", "{7ED4A5B6-0E52-4443-A320-71EA39E6DE18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

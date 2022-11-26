@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MatchAssistant.Domain.Core\MatchAssistant.Domain.Core.csproj" />
+    <ProjectReference Include="..\MatchAssistant.Domain.Contracts\MatchAssistant.Domain.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
