@@ -3,7 +3,6 @@ using MatchAssistant.Messaging.Telegram;
 using MatchAssistant.Web.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -42,20 +41,16 @@ namespace MatchAssistant.YcFunction.Telegram
             messagesProcessor = serviceProvider.GetService<IMessagesProcessor>();
             client = serviceProvider.GetService<ITelegramBotClient>();
 
-            //var chatMessage = message.ToChatMessage();
+            var chatMessage = message.ToChatMessage();
 
-            //var response = await messagesProcessor.ProcessMessageAsync(chatMessage);
+            var response = await messagesProcessor.ProcessMessageAsync(chatMessage);
 
-            //var formattedResponse = TelegramCommandResponseFormatter.FormatCommandResponse(chatMessage, response);
+            var formattedResponse = TelegramCommandResponseFormatter.FormatCommandResponse(chatMessage, response);
 
-            //Console.WriteLine($"response: {formattedResponse}");
-
-            //if (!string.IsNullOrEmpty(formattedResponse))
-            //{
-            //    await client.SendTextMessageAsync(message.Chat.Id, formattedResponse, ParseMode.Markdown);
-            //}
-
-            await client.SendTextMessageAsync(message.Chat.Id, "Принято", ParseMode.Markdown);
+            if (!string.IsNullOrEmpty(formattedResponse))
+            {
+                await client.SendTextMessageAsync(message.Chat.Id, formattedResponse, ParseMode.Markdown);
+            }
 
             return new Response(200, "Success");
         }

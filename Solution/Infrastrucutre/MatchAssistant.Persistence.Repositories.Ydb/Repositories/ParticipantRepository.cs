@@ -18,7 +18,7 @@ namespace MatchAssistant.Persistence.Repositories.Ydb.Repositories
             this.driverProvider = driverProvider;
         }
 
-        public async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(int gameId)
+        public async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(string gameId)
         {
             using var driver = await driverProvider.GetDriverAsync();
             using var tableClient = new TableClient(driver, new TableClientConfig());
@@ -26,11 +26,11 @@ namespace MatchAssistant.Persistence.Repositories.Ydb.Repositories
             var response = await tableClient.SessionExec(async session =>
             {
                 var yqlQuery = @"
-DECLARE $game_id AS Int32;
+DECLARE $game_id AS Utf8;
 
 SELECT * FROM game_participants WHERE game_id = $game_id;";
 
-                var queryParams = new Dictionary<string, YdbValue> { { "$gameId", YdbValue.MakeInt32(gameId) } };
+                var queryParams = new Dictionary<string, YdbValue> { { "$game_id", YdbValue.MakeUtf8(gameId) } };
 
                 return await session.ExecuteDataQuery(
                     query: yqlQuery,
@@ -42,17 +42,11 @@ SELECT * FROM game_participants WHERE game_id = $game_id;";
 
             response.Status.EnsureSuccess();
             var queryResponse = (ExecuteDataQueryResponse)response;
-            var resultSet = queryResponse.Result.ResultSets[0];
 
-            return resultSet.Rows.Select(row => new ParticipantsGroup
-            {
-                Name = (string)row["name"],
-                Count = (int)row["count"],
-                StateId = (int)row["state"]
-            });
+            return queryResponse.Result.ResultSets[0].Rows.Select(MapToParticipantGroup);
         }
 
-        public async Task<ParticipantsGroup> GetParticipantByNameAsync(int gameId, string participantName)
+        public async Task<ParticipantsGroup> GetParticipantByNameAsync(string gameId, string participantName)
         {
             using var driver = await driverProvider.GetDriverAsync();
             using var tableClient = new TableClient(driver, new TableClientConfig());
@@ -60,13 +54,13 @@ SELECT * FROM game_participants WHERE game_id = $game_id;";
             var response = await tableClient.SessionExec(async session =>
             {
                 var yqlQuery = @"
-DECLARE $game_id AS Int32;
+DECLARE $game_id AS Utf8;
 DECLARE $name AS Utf8;
 
-SELECT * FROM game_participants WHERE game_id = $game_id and name = $name;";
+SELECT * FROM game_participants WHERE game_id = $game_id and participant_name = $name;";
 
                 var queryParams = new Dictionary<string, YdbValue> {
-                    { "$gameId", YdbValue.MakeInt32(gameId) },
+                    { "$game_id", YdbValue.MakeUtf8(gameId) },
                     { "$name", YdbValue.MakeUtf8(participantName) }
                 };
 
@@ -80,19 +74,16 @@ SELECT * FROM game_participants WHERE game_id = $game_id and name = $name;";
 
             response.Status.EnsureSuccess();
             var queryResponse = (ExecuteDataQueryResponse)response;
-            var resultSet = queryResponse.Result.ResultSets[0];
 
-            var row = resultSet.Rows[0];
-
-            return new ParticipantsGroup
+            if (!queryResponse.Result.ResultSets.Any() || !queryResponse.Result.ResultSets[0].Rows.Any())
             {
-                Name = (string)row["name"],
-                Count = (int)row["count"],
-                StateId = (int)row["state"]
-            };
+                return null;
+            }
+
+            return MapToParticipantGroup(queryResponse.Result.ResultSets[0].Rows[0]);
         }
 
-        public async Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, int latestGameId, int recentGamesLimit)
+        public async Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, string latestGameId, int recentGamesLimit)
         {
             var gameIds = await GetRecentGamesIds(gameTitle, latestGameId, recentGamesLimit);
 
@@ -106,20 +97,19 @@ SELECT * FROM game_participants WHERE game_id = $game_id and name = $name;";
 
             var response = await tableClient.SessionExec(async session =>
             {
-                var yqlQuery = @"
+                var yqlQuery = $@"
 DECLARE $title AS Utf8;
 DECLARE $game_ids AS List;
 
 SELECT participant.* 
 FROM game_participants participant
-JOIN games game ON game.id = participant.game_id
-JOIN participant_states state ON state.id = participant.state_id 
-WHERE state.name = 'Accepted' AND game.title = $title AND game.id IN $game_ids;"
+JOIN games game ON game.game_id = participant.game_id
+WHERE participant.state = '{ParticipantState.Accepted}' AND game.title = $title AND game.game_id IN $game_ids;"
                 ;
 
                 var queryParams = new Dictionary<string, YdbValue> {
                     { "$title", YdbValue.MakeUtf8(gameTitle) },
-                    { "$game_ids", YdbValue.MakeList(gameIds.Select(id => YdbValue.MakeInt32(id)).ToArray())}
+                    { "$game_ids", YdbValue.MakeList(gameIds.Select(id => YdbValue.MakeUtf8(id)).ToArray())}
                 };
 
                 return await session.ExecuteDataQuery(
@@ -132,17 +122,11 @@ WHERE state.name = 'Accepted' AND game.title = $title AND game.id IN $game_ids;"
 
             response.Status.EnsureSuccess();
             var queryResponse = (ExecuteDataQueryResponse)response;
-            var resultSet = queryResponse.Result.ResultSets[0];
 
-            return resultSet.Rows.Select(row => new ParticipantsGroup
-            {
-                Name = (string)row["name"],
-                Count = (int)row["count"],
-                StateId = (int)row["state"]
-            });
+            return queryResponse.Result.ResultSets[0].Rows.Select(MapToParticipantGroup);
         }
 
-        public async Task AddParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
+        public async Task AddParticipantAsync(string gameId, ParticipantsGroup participantsGroup)
         {
             if (participantsGroup == null)
             {
@@ -156,18 +140,18 @@ WHERE state.name = 'Accepted' AND game.title = $title AND game.id IN $game_ids;"
             {
 
                 var yqlQuery = @"
-DECLARE $game_id AS Int32;
+DECLARE $game_id AS Utf8;
 DECLARE $name AS Utf8;
-DECLARE $state_id AS Int32;
+DECLARE $state AS Utf8;
 DECLARE $count AS Int32;
 
-UPSERT INTO game_participants (gameId, name, stateId, count) 
-VALUES ($game_id, $name, $state_id, $count);";
+UPSERT INTO game_participants (game_id, participant_name, state, participant_count) 
+VALUES ($game_id, $name, $state, $count);";
 
                 var queryParams = new Dictionary<string, YdbValue> {
-                    { "$game_id", YdbValue.MakeInt32(gameId) },
+                    { "$game_id", YdbValue.MakeUtf8(gameId) },
                     { "$name", YdbValue.MakeUtf8(participantsGroup.Name) },
-                    { "$state_id", YdbValue.MakeInt32(GetStateId(participantsGroup.State)) },
+                    { "$state", YdbValue.MakeUtf8(participantsGroup.State) },
                     { "$count", YdbValue.MakeInt32(participantsGroup.Count) },
                 };
 
@@ -181,7 +165,7 @@ VALUES ($game_id, $name, $state_id, $count);";
             response.Status.EnsureSuccess();
         }
 
-        public async Task UpdateParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
+        public async Task UpdateParticipantAsync(string gameId, ParticipantsGroup participantsGroup)
         {
             if (participantsGroup == null)
             {
@@ -195,19 +179,19 @@ VALUES ($game_id, $name, $state_id, $count);";
             {
 
                 var yqlQuery = @"
-DECLARE $game_id AS Int32;
+DECLARE $game_id AS Utf8;
 DECLARE $name AS Utf8;
-DECLARE $state_id AS Int32;
+DECLARE $state AS Utf8;
 DECLARE $count AS Int32;
 
 UPDATE game_participants
-SET state_id = $state_id, count = $count
-WHERE game_id = $game_id AND name = $name;";
+SET state = $state, participant_count = $count
+WHERE game_id = $game_id AND participant_name = $name;";
 
                 var queryParams = new Dictionary<string, YdbValue> {
-                    { "$game_id", YdbValue.MakeInt32(gameId) },
+                    { "$game_id", YdbValue.MakeUtf8(gameId) },
                     { "$name", YdbValue.MakeUtf8(participantsGroup.Name) },
-                    { "$state_id", YdbValue.MakeInt32(GetStateId(participantsGroup.State)) },
+                    { "$state", YdbValue.MakeUtf8(participantsGroup.State) },
                     { "$count", YdbValue.MakeInt32(participantsGroup.Count) },
                 };
 
@@ -221,7 +205,7 @@ WHERE game_id = $game_id AND name = $name;";
             response.Status.EnsureSuccess();
         }
 
-        private async Task<IEnumerable<int>> GetRecentGamesIds(string gameTitle, int latestGameId, int recentGamesLimit)
+        private async Task<IEnumerable<string>> GetRecentGamesIds(string gameTitle, string latestGameId, int recentGamesLimit)
         {
             using var driver = await driverProvider.GetDriverAsync();
             using var tableClient = new TableClient(driver, new TableClientConfig());
@@ -229,17 +213,17 @@ WHERE game_id = $game_id AND name = $name;";
             var response = await tableClient.SessionExec(async session =>
             {
                 var yqlQuery = @$"
-DECLARE $game_id AS Int32;
+DECLARE $game_id AS Utf8;
 DECLARE $title AS Utf8;
 
-SELECT game.id 
+SELECT game.game_id 
 FROM games game
-WHERE game.title = $title AND game.id < $game_id
-ORDER BY game.date DESC
+WHERE game.title = $title AND game.game_id < $game_id
+ORDER BY game.game_date DESC
 LIMIT {recentGamesLimit};";
 
                 var queryParams = new Dictionary<string, YdbValue> {
-                    { "$game_id", YdbValue.MakeInt32(latestGameId) },
+                    { "$game_id", YdbValue.MakeUtf8(latestGameId) },
                     { "$title", YdbValue.MakeUtf8(gameTitle) }
                 };
 
@@ -253,28 +237,20 @@ LIMIT {recentGamesLimit};";
 
             response.Status.EnsureSuccess();
             var queryResponse = (ExecuteDataQueryResponse)response;
-            var resultSet = queryResponse.Result.ResultSets[0];
 
-            return resultSet.Rows.Select(row => (int)row["id"]);
+            return queryResponse.Result.ResultSets[0].Rows.Select(row => (string)row["game_id"]);
         }
 
-
-        private int GetStateId(string state)
+        private ParticipantsGroup MapToParticipantGroup(ResultSet.Row row)
         {
-            if (state == ParticipantState.Accepted)
-            {
-                return 1;
-            }
-            if (state == ParticipantState.Declined)
-            {
-                return 2;
-            }
-            if (state == ParticipantState.NotSured)
-            {
-                return 3;
-            }
+            var count = (int?)row["participant_count"];
 
-            return 0;
+            return new ParticipantsGroup
+            {
+                Name = (string)row["participant_name"],
+                Count = count.Value,
+                State = (string)row["state"]
+            };
         }
     }
 }

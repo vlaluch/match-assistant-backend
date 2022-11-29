@@ -2,6 +2,7 @@
 using MatchAssistant.Domain.Contracts.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Ydb.Sdk.Table;
 using Ydb.Sdk.Value;
@@ -26,12 +27,14 @@ namespace MatchAssistant.Persistence.Repositories.Ydb.Repositories
             {
 
                 var yqlQuery = @"
+DECLARE $id AS Utf8;
 DECLARE $title AS Utf8;
 DECLARE $date AS Datetime;
 
-UPSERT INTO games (title, date) VALUES ($title, $date);";
+UPSERT INTO games (game_id, title, game_date) VALUES ($id, $title, $date);";
 
                 var queryParams = new Dictionary<string, YdbValue> {
+                    { "$id", YdbValue.MakeUtf8(Guid.NewGuid().ToString()) },
                     { "$title", YdbValue.MakeUtf8(game.Title) },
                     { "$date", YdbValue.MakeDatetime(game.Date) }
                 };
@@ -57,7 +60,7 @@ UPSERT INTO games (title, date) VALUES ($title, $date);";
 DECLARE $title AS Utf8;
 DECLARE $date AS Datetime;
 
-SELECT * FROM games WHERE title = $title AND date = $date;
+SELECT * FROM games WHERE title = $title AND game_date = $date;
     ";
 
                 var queryParams = new Dictionary<string, YdbValue> {
@@ -75,16 +78,13 @@ SELECT * FROM games WHERE title = $title AND date = $date;
 
             response.Status.EnsureSuccess();
             var queryResponse = (ExecuteDataQueryResponse)response;
-            var resultSet = queryResponse.Result.ResultSets[0];
 
-            if (resultSet.Rows.Count == 0)
+            if (!queryResponse.Result.ResultSets.Any() || !queryResponse.Result.ResultSets[0].Rows.Any())
             {
                 return null;
             }
 
-            var row = resultSet.Rows[0];
-
-            return new Game((string)row["title"], (DateTime)row["date"]);
+            return MapToGame(queryResponse.Result.ResultSets[0].Rows[0]);
         }
 
         public async Task<Game> GetLatestGameByTitleAsync(string title)
@@ -100,7 +100,7 @@ DECLARE $title AS Utf8;
 SELECT * 
 FROM games 
 WHERE title = $title
-ORDER BY date DESC
+ORDER BY game_date DESC
 LIMIT 1;";
 
                 var queryParams = new Dictionary<string, YdbValue> { { "$title", YdbValue.MakeUtf8(title) } };
@@ -115,16 +115,20 @@ LIMIT 1;";
 
             response.Status.EnsureSuccess();
             var queryResponse = (ExecuteDataQueryResponse)response;
-            var resultSet = queryResponse.Result.ResultSets[0];
 
-            if (resultSet.Rows.Count == 0)
+            if (!queryResponse.Result.ResultSets.Any() || !queryResponse.Result.ResultSets[0].Rows.Any())
             {
                 return null;
             }
 
-            var row = resultSet.Rows[0];
+            return MapToGame(queryResponse.Result.ResultSets[0].Rows[0]);
+        }
 
-            return new Game((string)row["title"], (DateTime)row["date"]);
+        private Game MapToGame(ResultSet.Row row)
+        {
+            var gameDate = (DateTime?)row["game_date"];
+
+            return new Game((string)row["game_id"], (string)row["title"], gameDate.Value);
         }
     }
 }

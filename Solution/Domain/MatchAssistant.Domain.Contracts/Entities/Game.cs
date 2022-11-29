@@ -12,12 +12,12 @@ namespace MatchAssistant.Domain.Contracts.Entities
             Participants = new List<ParticipantsGroup>();
         }
 
-        public Game(int id, string title, DateTime date) : this(title, date)
+        public Game(string id, string title, DateTime date) : this(title, date)
         {
             Id = id;
         }
 
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string Title { get; set; }
 

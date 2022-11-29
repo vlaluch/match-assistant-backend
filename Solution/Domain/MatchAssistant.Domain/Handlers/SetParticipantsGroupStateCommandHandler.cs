@@ -58,7 +58,7 @@ namespace MatchAssistant.Domain.Handlers
             }
         }
 
-        private async Task<bool> HandleUpdatesAsync(int gameId, ParticipantsGroup existingGroup, ParticipantsGroup updatedGroup)
+        private async Task<bool> HandleUpdatesAsync(string gameId, ParticipantsGroup existingGroup, ParticipantsGroup updatedGroup)
         {
             if (existingGroup.State != updatedGroup.State)
             {
@@ -95,7 +95,7 @@ namespace MatchAssistant.Domain.Handlers
 
         private async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsForGameAsync(string gameTitle)
         {
-            var game = gameRepository.GetLatestGameByTitleAsync(gameTitle);
+            var game = await gameRepository.GetLatestGameByTitleAsync(gameTitle);
 
             if (game == null)
             {

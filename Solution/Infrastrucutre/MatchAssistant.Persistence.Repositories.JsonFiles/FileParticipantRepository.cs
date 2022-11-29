@@ -5,14 +5,14 @@ namespace MatchAssistant.Persistence.Repositories.JsonFiles
 {
     public class FileParticipantRepository : IParticipantRepository
     {
-        private Dictionary<int, List<ParticipantsGroup>> participants;
-        private readonly JsonStorage<Dictionary<int, List<ParticipantsGroup>>> storage;
+        private Dictionary<string, List<ParticipantsGroup>> participants;
+        private readonly JsonStorage<Dictionary<string, List<ParticipantsGroup>>> storage;
 
-        public FileParticipantRepository(JsonStorage<Dictionary<int, List<ParticipantsGroup>>> storage)
+        public FileParticipantRepository(JsonStorage<Dictionary<string, List<ParticipantsGroup>>> storage)
         {
             this.storage = storage;
 
-            participants = new Dictionary<int, List<ParticipantsGroup>>();
+            participants = new Dictionary<string, List<ParticipantsGroup>>();
 
             var storedParticipants = storage.Load();
 
@@ -25,7 +25,7 @@ namespace MatchAssistant.Persistence.Repositories.JsonFiles
             }
         }
 
-        public Task AddParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
+        public Task AddParticipantAsync(string gameId, ParticipantsGroup participantsGroup)
         {
             if (!participants.ContainsKey(gameId))
             {
@@ -40,7 +40,7 @@ namespace MatchAssistant.Persistence.Repositories.JsonFiles
             return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(int gameId)
+        public Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(string gameId)
         {
             if (!participants.ContainsKey(gameId))
             {
@@ -50,7 +50,7 @@ namespace MatchAssistant.Persistence.Repositories.JsonFiles
             return Task.FromResult(participants[gameId].AsEnumerable());
         }
 
-        public Task<ParticipantsGroup> GetParticipantByNameAsync(int gameId, string participantName)
+        public Task<ParticipantsGroup> GetParticipantByNameAsync(string gameId, string participantName)
         {
             if (!participants.ContainsKey(gameId))
             {
@@ -60,12 +60,12 @@ namespace MatchAssistant.Persistence.Repositories.JsonFiles
             return Task.FromResult(participants[gameId].FirstOrDefault(x => x.Name == participantName));
         }
 
-        public Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, int latestGameId, int recentGamesLimit)
+        public Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, string latestGameId, int recentGamesLimit)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task UpdateParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
+        public Task UpdateParticipantAsync(string gameId, ParticipantsGroup participantsGroup)
         {
             var participant = participants[gameId].FirstOrDefault(x => x.Name == participantsGroup.Name);
             participant = participantsGroup;

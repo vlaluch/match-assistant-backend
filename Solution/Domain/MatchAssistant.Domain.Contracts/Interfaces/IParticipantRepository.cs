@@ -6,14 +6,14 @@ namespace MatchAssistant.Domain.Contracts.Interfaces
 {
     public interface IParticipantRepository
     {
-        Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(int gameId);
+        Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(string gameId);
 
-        Task<ParticipantsGroup> GetParticipantByNameAsync(int gameId, string participantName);
+        Task<ParticipantsGroup> GetParticipantByNameAsync(string gameId, string participantName);
 
-        Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, int latestGameId, int recentGamesLimit);
+        Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, string latestGameId, int recentGamesLimit);
 
-        Task AddParticipantAsync(int gameId, ParticipantsGroup participantsGroup);
+        Task AddParticipantAsync(string gameId, ParticipantsGroup participantsGroup);
 
-        Task UpdateParticipantAsync(int gameId, ParticipantsGroup participantsGroup);
+        Task UpdateParticipantAsync(string gameId, ParticipantsGroup participantsGroup);
     }
 }

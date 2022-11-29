@@ -13,21 +13,21 @@ namespace MatchAssistant.Persistence.Repositories.MySql.Repositories
             this.dbConnectionProvider = dbConnectionProvider;
         }
 
-        public async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(int gameId)
+        public async Task<IEnumerable<ParticipantsGroup>> GetAllParticipantsAsync(string gameId)
         {
             var sqlQuery = "SELECT * FROM game_participants WHERE GameId = @GameId";
             var queryParams = new { GameId = gameId };
             return await dbConnectionProvider.Connection.QueryAsync<ParticipantsGroup>(sqlQuery, queryParams);
         }
 
-        public async Task<ParticipantsGroup> GetParticipantByNameAsync(int gameId, string participantName)
+        public async Task<ParticipantsGroup> GetParticipantByNameAsync(string gameId, string participantName)
         {
             var sqlQuery = "SELECT * FROM game_participants WHERE GameId = @GameId and Name = @Name";
             var queryParams = new { GameId = gameId, Name = participantName };
             return await dbConnectionProvider.Connection.QueryFirstOrDefaultAsync<ParticipantsGroup>(sqlQuery, queryParams);
         }
 
-        public async Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, int latestGameId, int recentGamesLimit)
+        public async Task<IEnumerable<ParticipantsGroup>> GetRecentGamesParticipantsAsync(string gameTitle, string latestGameId, int recentGamesLimit)
         {
             var gameIds = await GetRecentGamesIds(gameTitle, latestGameId, recentGamesLimit);
 
@@ -45,7 +45,7 @@ WHERE state.Name = 'Accepted' AND game.Title = @Title AND game.Id IN @GameIds";
             return await dbConnectionProvider.Connection.QueryAsync<ParticipantsGroup>(sqlQuery, queryParams);
         }
 
-        public async Task AddParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
+        public async Task AddParticipantAsync(string gameId, ParticipantsGroup participantsGroup)
         {
             if (participantsGroup == null)
             {
@@ -67,7 +67,7 @@ VALUES (@GameId, @Name, @StateId, @Count)";
             await dbConnectionProvider.Connection.ExecuteAsync(sqlQuery, queryParams);
         }
 
-        public async Task UpdateParticipantAsync(int gameId, ParticipantsGroup participantsGroup)
+        public async Task UpdateParticipantAsync(string gameId, ParticipantsGroup participantsGroup)
         {
             if (participantsGroup == null)
             {
@@ -90,7 +90,7 @@ WHERE GameId = @GameId AND Name = @Name";
             await dbConnectionProvider.Connection.ExecuteAsync(sqlQuery, queryParams);
         }
 
-        private async Task<IEnumerable<int>> GetRecentGamesIds(string gameTitle, int latestGameId, int recentGamesLimit)
+        private async Task<IEnumerable<int>> GetRecentGamesIds(string gameTitle, string latestGameId, int recentGamesLimit)
         {
             var sqlQuery = $@"
 SELECT game.Id 
