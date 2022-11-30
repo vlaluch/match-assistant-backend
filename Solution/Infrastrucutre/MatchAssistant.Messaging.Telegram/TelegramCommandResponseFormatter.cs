@@ -16,6 +16,12 @@ namespace MatchAssistant.Messaging.Telegram
                 case CommandType.Count:
                 case CommandType.SetState:
                     var participants = response.Payload as IEnumerable<ParticipantsGroup>;
+
+                    if (participants == null || !participants.Any())
+                    {
+                        return string.Empty;
+                    }
+
                     return OutputFormatter.FormatCountResponse(participants);
                 case CommandType.List:
                     participants = response.Payload as IEnumerable<ParticipantsGroup>;
