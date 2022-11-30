@@ -14,6 +14,8 @@ namespace MatchAssistant.Persistence.Repositories.InMemory
 
         public Task AddGameAsync(Game game)
         {
+            game.Id = Guid.NewGuid().ToString();
+
             games.Add(game);
             return Task.CompletedTask;
         }
